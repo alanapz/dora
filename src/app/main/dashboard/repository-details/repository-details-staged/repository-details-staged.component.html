@@ -1,0 +1,37 @@
+<p>Staged but not committed :</p>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+    <th scope="col">Path</th>
+    <th scope="col">Status</th>
+    <th scope="col">
+      <div ngbDropdown container="body">
+        <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle [disabled]="qts.isAnySelected() ? '' : 'disabled'">Actions</button>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem>Unstage Selected</button>
+          <button ngbDropdownItem>Reset Selected</button>
+        </div>
+      </div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let stagedFile of stagedFiles">
+    <tr>
+      <td><input type="checkbox" (click)="qts.toggleObject(stagedFile)" [checked]="(stagedFile.selected ? 'checked' : '')" /></td>
+      <td>/{{ stagedFile.path }}</td>
+      <td>({{ stagedFile.status }})</td>
+      <td class="overflow-hidden">
+        <div ngbDropdown container="body">
+          <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem>Unstage</button>
+            <button ngbDropdownItem>Reset</button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

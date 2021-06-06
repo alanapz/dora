@@ -1,0 +1,31 @@
+<p>Stashes - <b>Warning: Stashes are only kept for 14 days by default</b>:</p>
+<table id="stashes-table" class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('name')">Name</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('date')">Date</th>
+    <th scope="col">Message</th>
+    <th scope="col">
+      <div ngbDropdown container="body">
+        <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
+      </div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let stash of stashes">
+    <tr>
+      <td><input type="checkbox" (click)="qts.toggleObject(stash)" [checked]="(qts.isSelected(stash) ? 'checked' : '')" /></td>
+      <td><a href="#" refdetails [repoPath]="repoPath" [refName]="stash.refName" [displayName]="stash.displayName">{{ stash.displayName }}</a></td>
+      <td data-toggle="tooltip" data-html="true" title="{{ stash.commit.committer.timestamp | timestamp:'full' }}">{{ stash.commit.committer.timestamp | timestamp:'compact' }}</td>
+      <td data-toggle="tooltip" data-html="true" title="{{ stash.commit.message }}">{{ stash.commit.subject }}</td>
+      <td class="overflow-hidden">
+        <div ngbDropdown container="body">
+          <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
+        </div>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

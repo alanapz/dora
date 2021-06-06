@@ -1,0 +1,39 @@
+<p>Untracked, not staged (changes may be LOST) :</p>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+    <th scope="col">Path</th>
+    <th scope="col">
+      <div ngbDropdown container="body">
+        <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle [disabled]="qts.isAnySelected() ? '' : 'disabled'">Actions</button>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem>Track Selected</button>
+          <button ngbDropdownItem>Stage Selected</button>
+          <div class="dropdown-divider"></div>
+          <button ngbDropdownItem>Delete Selected</button>
+        </div>
+      </div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let untrackedFile of untrackedFiles">
+    <tr>
+      <td><input type="checkbox" (click)="qts.toggleObject(untrackedFile)" [checked]="(untrackedFile.selected ? 'checked' : '')" /></td>
+      <td>/{{ untrackedFile.path }}</td>
+      <td class="overflow-hidden">
+        <div ngbDropdown container="body">
+          <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem>Track</button>
+            <button ngbDropdownItem>Stage</button>
+            <div class="dropdown-divider"></div>
+            <button ngbDropdownItem>Delete</button>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

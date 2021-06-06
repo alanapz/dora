@@ -1,0 +1,5 @@
+<div style="width: 100%;">
+  <app-repository-list [fullScreenMode]="fullScreenMode" style="float: left;" [style.width]="fullScreenMode ? '100%' : '20%'" [repositorySelected]="repositorySelected" [repositoryModified]="repositoryModified"></app-repository-list>
+  <app-repository-details *ngIf="!fullScreenMode" style="width: 80%; float: right;" [repositorySelected]="repositorySelected" [repositoryModified]="repositoryModified"></app-repository-details>
+  <div style="clear:both;"></div>
+</div>
