@@ -10,7 +10,7 @@ import { AbstractComponent } from "src/app/abstract-component";
 import { RepositoryModifiedEvent, RepositorySelectedEvent } from "src/app/main/dashboard/dashboard.types";
 import { debug } from "src/app/utils/gql-debug.operator";
 import { unwrapApolloResult } from "src/app/utils/gql-result.operator";
-import { GitRepository, GitWorkingDirectoryItemStatus } from "src/generated/graphql";
+import { GitRepository } from "src/generated/graphql";
 import { nonNull } from "src/utils/check";
 import { utils } from "src/utils/utils";
 
@@ -33,10 +33,6 @@ export class RepositoryDetailsComponent extends AbstractComponent {
   private _repository?: GitRepository;
 
   untrackedFiles: {path: string}[] = [];
-
-  unstagedFiles: {path: string, status: GitWorkingDirectoryItemStatus[]}[] = [];
-
-  stagedFiles: {path: string, status: GitWorkingDirectoryItemStatus[]}[] = [];
 
   constructor(private readonly apollo: Apollo, protected readonly injector: Injector) {
     super();
@@ -65,7 +61,6 @@ export class RepositoryDetailsComponent extends AbstractComponent {
       .pipe(filter(event => !!event))
       .pipe(map(event => event!.selectionType))
       .pipe(tap(type => {
-        console.log("yyy", type);
 
         if (type === 'staged') {
           this.accordionComponent!.activeIds = 'panel-staged';
@@ -81,6 +76,9 @@ export class RepositoryDetailsComponent extends AbstractComponent {
         }
         if (type === 'stashes') {
           this.accordionComponent!.activeIds = 'panel-stashes';
+        }
+        if (type === 'lastCommitDate') {
+          this.accordionComponent!.activeIds = 'panel-recent-commits';
         }
       }))
       .subscribe(utils.subscriber());
@@ -130,11 +128,16 @@ export class RepositoryDetailsComponent extends AbstractComponent {
           stashes {
             refName,
             displayName,
-            commit {
-              id,
-              committer { timestamp },
-              subject
-            }
+            message,
+            timestamp
+          },
+          recentCommits(count: 50) {
+            id,
+            author { name, emailAddress, timestamp },
+            committer { name, emailAddress, timestamp },
+            subject,
+            message,
+            reachableBy { refName, displayName }
           }
         }
       }
@@ -156,12 +159,6 @@ export class RepositoryDetailsComponent extends AbstractComponent {
 
         this.untrackedFiles = (result.workingDirectory ? result.workingDirectory.untracked.map(item => ({path: item.path})) : []);
         this.untrackedFiles.sort();
-
-        this.unstagedFiles = (result.workingDirectory ? result.workingDirectory.unstaged.map(item => ({path: item.path, status: item.status})) : []);
-        this.unstagedFiles.sort();
-
-        this.stagedFiles = (result.workingDirectory ? result.workingDirectory.staged.map(item => ({path: item.path, status: item.status})) : []);
-        this.stagedFiles.sort();
 
         waitComplete();
 

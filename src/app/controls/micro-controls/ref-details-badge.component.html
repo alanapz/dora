@@ -1,0 +1,7 @@
+<ng-container *ngIf="repoPath && ref">
+  <a href="#" refdetails [repoPath]="repoPath" [refName]="ref.refName" [displayName]="ref.displayName">
+    <span *ngIf="isType('GitBranch')" class="badge badge-success">{{ ref.displayName | truncate:40 }}</span>
+    <span *ngIf="isType('GitTrackingBranch')" class="badge badge-info">{{ ref.displayName | truncate:40 }}</span>
+    <span *ngIf="isType('GitTag')" class="badge badge-secondary">{{ ref.displayName | truncate:40 }}</span>
+  </a>
+</ng-container>

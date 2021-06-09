@@ -4,7 +4,6 @@ import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { Apollo } from "apollo-angular";
 import { OperationVariables } from "apollo-client";
 import { DocumentNode } from "graphql";
-import { of } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
 import { AbstractComponent } from "src/app/abstract-component";
 import { unwrapApolloResult } from "src/app/utils/gql-result.operator";
@@ -73,7 +72,7 @@ export class RefDetailsPopupComponent extends AbstractComponent {
       .pipe(mergeMap(result => {
         this.ref = result;
         waitComplete();
-        return of(void 0);
+        return utils.ofVoid();
       })).subscribe(utils.subscriber());
   }
 

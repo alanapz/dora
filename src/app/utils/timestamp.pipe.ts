@@ -14,7 +14,7 @@ export class TimestampPipe implements PipeTransform {
       return moment(timestamp * 1000).format("llll");
     }
     else if (format == 'compact') {
-      return moment(timestamp * 1000).format("MM/DD HH:mm");
+      return moment(timestamp * 1000).format("DD/MM HH:mm");
     }
     else {
       return moment(timestamp * 1000).format();

@@ -3,7 +3,7 @@ import { gql, OperationVariables } from "@apollo/client/core";
 import { Apollo } from "apollo-angular";
 import { DocumentNode } from "graphql";
 import { Observable, of, Subject } from "rxjs";
-import { map, mergeMap } from "rxjs/operators";
+import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { AbstractComponent } from "src/app/abstract-component";
 import { NgbdSortableHeader } from "src/app/controls/table-sortable/table-sortable.directive";
 import { SortEvent } from "src/app/controls/table-sortable/table-sortable.types";
@@ -12,7 +12,10 @@ import {
   RepositorySelectedEvent,
   RepositorySelectionType
 } from "src/app/main/dashboard/dashboard.types";
+import { RepositoryService } from "src/app/services/repository.service";
+import { ToastService } from "src/app/services/toast-service";
 import { unwrapApolloResult } from "src/app/utils/gql-result.operator";
+import { QuickTableSelect } from "src/app/utils/quick-table-select";
 import { environment } from "src/environments/environment";
 import { GitRepository } from "src/generated/graphql";
 import { nonNull } from "src/utils/check";
@@ -22,10 +25,14 @@ import { utils } from "src/utils/utils";
 interface RepositoryListItem {
   path: string;
   loaded: boolean;
+  busy: boolean;
+  filtered: boolean;
   lastFetchDate: number | null;
+  lastCommitDate: number | null;
   staged: number | null;
   unstaged: number | null;
   untracked: number | null;
+  headRefName: string | null;
   headDisplayName: string | null;
   branches: number | null;
   branchesWithNoUpstream: number | null;
@@ -59,9 +66,15 @@ export class RepositoryListComponent extends AbstractComponent {
   @ViewChildren(NgbdSortableHeader)
   repositoryTableHeaders?: QueryList<NgbdSortableHeader>;
 
+  readonly qts = new QuickTableSelect(() => this.repositories);
+
   private _repositories: RepositoryListItem[] = [];
 
-  constructor(private readonly apollo: Apollo, protected readonly injector: Injector) {
+  constructor(
+    protected readonly injector: Injector,
+    private readonly apollo: Apollo,
+    private readonly repositoryService: RepositoryService,
+    private readonly toastService: ToastService) {
     super();
   }
 
@@ -95,10 +108,14 @@ export class RepositoryListComponent extends AbstractComponent {
         this._repositories = response.results.map(repo => ({
           path: repo.path,
           loaded: false,
+          busy: false,
+          filtered: false,
           lastFetchDate: null,
+          lastCommitDate: null,
           staged: null,
           unstaged: null,
           untracked: null,
+          headRefName: null,
           headDisplayName: null,
           branches: null,
           branchesWithNoUpstream: null,
@@ -131,12 +148,19 @@ export class RepositoryListComponent extends AbstractComponent {
         result: repository(path: $repoPath) {
           path,
           lastFetchDate,
+          recentCommits(count: 1) {
+            id,
+            committer { timestamp }
+          },
           workingDirectory {
             staged { status },
             unstaged { status },
             untracked { status }
           },
-          head { displayName },
+          head {
+            refName,
+            displayName
+          },
           branches {
             branchName,
             upstream { branchName },
@@ -162,10 +186,13 @@ export class RepositoryListComponent extends AbstractComponent {
         const upstreamDistances = result.branches.filter(b => !!b.upstreamDistance).map(b => b.upstreamDistance!);
 
         repository.loaded = true;
-        repository.lastFetchDate = result.lastFetchDate;
+        repository.busy = false;
+        repository.lastFetchDate = (result.lastFetchDate || null);
+        repository.lastCommitDate = (result.recentCommits && result.recentCommits.length ? result.recentCommits[0].committer.timestamp : null);
         repository.staged = workingDirectory.staged.length;
         repository.unstaged = workingDirectory.unstaged.length;
         repository.untracked = workingDirectory.untracked.length;
+        repository.headRefName = (result.head?.refName || null);
         repository.headDisplayName = (result.head?.displayName || null);
         repository.branches = result.branches.length;
         repository.branchesWithNoUpstream = result.branches.filter(b => !b.upstreamDistance).length;
@@ -189,6 +216,7 @@ export class RepositoryListComponent extends AbstractComponent {
 
   onClick(repository: RepositoryListItem, selectionType: RepositorySelectionType) {
     this.repositorySelected!.next({path: repository.path, selectionType});
+    return false;
   }
 
   onSort({columnName, direction}: SortEvent): void {
@@ -203,5 +231,29 @@ export class RepositoryListComponent extends AbstractComponent {
       func: (status) => status[(columnName as keyof RepositoryListItem)],
       descending: (direction == 'desc')
     })));
+  }
+
+  onBulkAction(action: 'fetch' | 'setDefaultUpstream') {
+
+    const selectedRepositories = this._repositories.filter(repo => this.qts.selected.has(repo) && !repo.filtered);
+
+    multiFork(environment.concurrency, selectedRepositories.map(repo => this.fetchAndReloadRepository(repo)))
+      .subscribe(utils.subscriber());
+  }
+
+  onAction(repo: RepositoryListItem, action: 'fetch') {
+    this.fetchAndReloadRepository(repo).subscribe(utils.subscriber());
+  }
+
+  private fetchAndReloadRepository(repo: RepositoryListItem): Observable<void> {
+    repo.busy = true;
+    repo.loaded = false;
+    return this.repositoryService.fetchRepository(repo.path)
+      .pipe(tap(() => repo.busy = false))
+      .pipe(catchError(e => {
+        this.toastService.showError(`'${repo.path}' error: ${e}`);
+        return utils.ofVoid();
+      }))
+      .pipe(mergeMap(() => this.loadRepository(repo)));
   }
 }

@@ -33,16 +33,16 @@ export class DurationPipe implements PipeTransform {
       return "Just Now";
     }
     else if (weeks + days + hours === 0) {
-      return `${minutes} minutes(s)`;
+      return `${minutes}m ago`;
     }
     else if (weeks + days === 0) {
-      return `${hours} hour(s), ${minutes} minutes(s)`;
+      return `${hours}h ${minutes}m ago`;
     }
     else if (weeks === 0) {
-      return `${days} days(s)`;
+      return `${days} days(s) ago`;
     }
     else {
-      return `${weeks} weeks(s)`;
+      return `${weeks} weeks(s) ago`;
     }
   }
 }
