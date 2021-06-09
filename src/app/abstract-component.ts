@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, Injector, OnDestroy, OnInit } from '@angular/core';
-import { MonoTypeOperatorFunction, Observable, Subject } from 'rxjs';
+import { AsyncSubject, MonoTypeOperatorFunction, Observable, Subject } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 
 @Directive()
@@ -7,7 +7,7 @@ export abstract class AbstractComponent implements OnInit, OnDestroy, AfterViewI
 
   protected abstract injector: Injector;
 
-  private readonly onDestroy = new Subject<void>();
+  private readonly onDestroy = new AsyncSubject<void>();
 
   private waitCount = 0;
 

@@ -2,10 +2,14 @@ import { nonNull } from "src/utils/check";
 
 export class QuickTableSelect<T> {
 
-  private readonly selected = new Set<T>();
+  readonly selected = new Set<T>();
 
   constructor(private readonly callback: () => T[]) {
     nonNull(callback, "callback");
+  }
+
+  getSelected() {
+
   }
 
   isSelected(object: T): boolean {

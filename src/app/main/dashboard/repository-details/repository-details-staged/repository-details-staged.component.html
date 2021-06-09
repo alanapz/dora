@@ -3,8 +3,8 @@
   <thead>
   <tr>
     <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
-    <th scope="col">Path</th>
     <th scope="col">Status</th>
+    <th scope="col">Path</th>
     <th scope="col">
       <div ngbDropdown container="body">
         <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle [disabled]="qts.isAnySelected() ? '' : 'disabled'">Actions</button>
@@ -19,9 +19,18 @@
   <tbody>
   <ng-container *ngFor="let stagedFile of stagedFiles">
     <tr>
-      <td><input type="checkbox" (click)="qts.toggleObject(stagedFile)" [checked]="(stagedFile.selected ? 'checked' : '')" /></td>
-      <td>/{{ stagedFile.path }}</td>
-      <td>({{ stagedFile.status }})</td>
+      <td><input type="checkbox" (click)="qts.toggleObject(stagedFile)" [checked]="(qts.isSelected(stagedFile) ? 'checked' : '')" /></td>
+      <td>
+        <ng-container *ngFor="let status of stagedFile.status" [ngSwitch]="status">
+          <span *ngSwitchCase="'ADDED'" class="badge badge-success">New</span>
+          <span *ngSwitchCase="'COPIED'" class="badge badge-success">Copied</span>
+          <span *ngSwitchCase="'DELETED'" class="badge badge-danger">Deleted</span>
+          <span *ngSwitchCase="'MODIFIED'" class="badge badge-primary">Changed</span>
+          <span *ngSwitchCase="'TYPE_CHANGED'" class="badge badge-warning">Attributes Changed</span>
+          <span *ngSwitchDefault class="badge badge-secondary">{{ status }}</span>
+        </ng-container>
+      </td>
+      <td>{{ stagedFile.path }}</td>
       <td class="overflow-hidden">
         <div ngbDropdown container="body">
           <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>

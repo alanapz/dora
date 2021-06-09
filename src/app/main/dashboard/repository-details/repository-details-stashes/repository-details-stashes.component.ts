@@ -1,4 +1,5 @@
 import { Component, Injector, Input, QueryList, ViewChildren } from '@angular/core';
+import moment from "moment";
 import { AbstractComponent } from "src/app/abstract-component";
 import { NgbdSortableHeader } from "src/app/controls/table-sortable/table-sortable.directive";
 import { SortEvent } from "src/app/controls/table-sortable/table-sortable.types";
@@ -57,5 +58,9 @@ export class RepositoryDetailsStashesComponent extends AbstractComponent {
     if (sortKey === 'name') {
       this._sortCallback = { func: branch => branch.displayName, descending };
     }
+  }
+
+  numberOfDays(stash: GitStash) {
+    return (moment().unix() - stash.timestamp) / 60 / 60 / 24;
   }
 }

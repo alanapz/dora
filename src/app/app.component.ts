@@ -8,7 +8,7 @@ import { environment } from "src/environments/environment";
 })
 export class AppComponent {
 
-  readonly title = 'gitql-web';
+  readonly title = 'dora the git explorer';
 
   get readmeUrl() {
     return "https://github.com/alanapz/gitql/blob/develop/README.md"

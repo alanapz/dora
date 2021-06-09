@@ -1,7 +1,8 @@
 import { Component, Injector, Input } from '@angular/core';
 import { AbstractComponent } from "src/app/abstract-component";
 import { QuickTableSelect } from "src/app/utils/quick-table-select";
-import { GitWorkingDirectoryItemStatus } from "src/generated/graphql";
+import { GitRepository, GitWorkingDirectoryItem } from "src/generated/graphql";
+import { utils } from "src/utils/utils";
 
 @Component({
   selector: 'app-repository-details-staged',
@@ -9,12 +10,18 @@ import { GitWorkingDirectoryItemStatus } from "src/generated/graphql";
 })
 export class RepositoryDetailsStagedComponent extends AbstractComponent {
 
-  @Input()
-  stagedFiles: {path: string, status: GitWorkingDirectoryItemStatus[], selected?: boolean}[] = [];
+  @Input("repo")
+  _repo?: GitRepository;
 
   readonly qts = new QuickTableSelect(() => this.stagedFiles);
 
   constructor(protected readonly injector: Injector) {
     super();
+  }
+
+  get stagedFiles(): GitWorkingDirectoryItem[] {
+    const stagedFiles = [... (this._repo!.workingDirectory && this._repo!.workingDirectory.staged) ?? []];
+    stagedFiles.sort(utils.orderBy({func: val => val.path}));
+    return stagedFiles;
   }
 }

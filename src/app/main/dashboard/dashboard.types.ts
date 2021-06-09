@@ -1,10 +1,10 @@
 // We declare a new type instead of using keyof RepositoryListItem to avoid having to import RepositoryListItem everywhere
 export type RepositorySelectionType = "path"
   | "lastFetchDate"
+  | "lastCommitDate"
   | "staged"
   | "unstaged"
   | "untracked"
-  | "headDisplayName"
   | "branches"
   | "branchesWithNoUpstream"
   | "branchesAheadOfUpstream"

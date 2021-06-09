@@ -1,4 +1,4 @@
-import { EMPTY, Observable, PartialObserver } from "rxjs";
+import { EMPTY, Observable, of, PartialObserver } from "rxjs";
 
 export interface SortCallback<T> {
   func: (input: T) => any;
@@ -55,6 +55,9 @@ export const utils = {
       }
       return 0;
     };
-  }
+  },
 
+  ofVoid(): Observable<void> {
+    return of(void 0) as Observable<void>;
+  },
 };
