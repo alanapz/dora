@@ -1,0 +1,7 @@
+<div *ngIf="qts && item">
+  <ng-container *ngFor="let action of qts.actions">
+    <button *ngIf="action.isEnabledFor(item)" (click)="onClick(action)" class="btn btn-{{ action.type }} btn-sm" style="margin-right: 0.5em;">
+      <app-bootstrap-icon [iconName]="action.icon"></app-bootstrap-icon>
+    </button>
+  </ng-container>
+</div>

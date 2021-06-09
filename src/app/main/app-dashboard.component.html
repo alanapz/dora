@@ -1,0 +1,13 @@
+<app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
+
+<ul class="nav nav-pills">
+  <li class="nav-item">
+    <a class="nav-link {{ active === 'repositories' ? 'active' : '' }}" href="#" (click)="tabClicked('repositories')">Repositories</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{ active === 'branches' ? 'active' : '' }}" href="#" (click)="tabClicked('branches')">Branches</a>
+  </li>
+</ul>
+
+<app-repository-dashboard *ngIf="active === 'repositories'"></app-repository-dashboard>
+<app-branches-dashboard *ngIf="active === 'branches'"></app-branches-dashboard>

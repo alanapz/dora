@@ -1,0 +1,29 @@
+<table id="commits-table" class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col">ID</th>
+    <th scope="col">Date</th>
+    <th scope="col">Author</th>
+    <th scope="col">Message</th>
+    <th scope="col">Reachable By</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let commit of commits">
+    <tr>
+      <td data-toggle="tooltip" data-html="true" title="{{ commit.id }}">
+        <a href="#" commitdetails [repoPath]="this.repoPath" [commitId]="commit.id">{{ commit.id.substring(0, 8) }}</a>
+        <app-web-url-link *ngFor="let webUrl of commit.webUrls" [link]="webUrl"></app-web-url-link>
+      </td>
+      <td data-toggle="tooltip" data-html="true" title="{{ commit.committer.timestamp | timestamp:'full' }}">{{ commit.committer.timestamp | timestamp:'compact' }}</td>
+      <td data-toggle="tooltip" data-html="true" title="{{ commit.author.name }} &lt;{{ commit.author.emailAddress }}&gt;">{{ commit.author.name }}</td>
+      <td data-toggle="tooltip" data-html="true" title="{{ commit.message }}">{{ commit.subject | truncate:120 }}</td>
+      <td>
+        <ng-container *ngFor="let reachableBy of commit.reachableBy">
+          <p><app-ref-details-badge [repoPath]="repoPath" [ref]="reachableBy"></app-ref-details-badge></p>
+        </ng-container>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

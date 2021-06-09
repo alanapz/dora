@@ -1,3 +1,57 @@
+.ngb-toasts {
+  position:fixed;
+  top:0;
+  right:0;
+  margin:.5em;
+  z-index:1200
+}
+ngb-toast {
+  display:block
+}
+ngb-toast .toast-header .close {
+  margin-left:auto;
+  margin-bottom:.25rem
+}
+
+.toast {
+  flex-basis:350px;
+  max-width:350px;
+  font-size:.875rem;
+  background-color:hsla(0,0%,100%,.85);
+  background-clip:padding-box;
+  border:1px solid rgba(0,0,0,.1);
+  box-shadow:0 .25rem .75rem rgba(0,0,0,.1);
+  opacity:0;
+  border-radius:.25rem
+}
+.toast:not(:last-child) {
+  margin-bottom:.75rem
+}
+.toast.showing {
+  opacity:1
+}
+.toast.show {
+  display:block;
+  opacity:1
+}
+.toast.hide {
+  display:none
+}
+.toast-header {
+  display:flex;
+  align-items:center;
+  padding:.25rem .75rem;
+  color:#6c757d;
+  background-color:hsla(0,0%,100%,.85);
+  background-clip:padding-box;
+  border-bottom:1px solid rgba(0,0,0,.05);
+  border-top-left-radius:calc(.25rem - 1px);
+  border-top-right-radius:calc(.25rem - 1px)
+}
+.toast-body {
+  padding:.75rem
+}
+
 th[sortable], th[ng-reflect-sortable] {
   cursor:pointer;
   -moz-user-select:none;
@@ -25,4 +79,39 @@ th[sortable].desc:before, th[ng-reflect-sortable].desc:before {
 .accordion-button {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.badge.badge-warning {
+  color: #444444;
+}
+
+.data-table th, .data-table td {
+  font-size: 12.5px;
+}
+
+.data-table td a, .data-table th a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.data-table td a:hover, .data-table th a:hover {
+  text-decoration: underline;
+}
+
+.badge {
+  font-size: 10.5px;
+}
+
+.centered {
+  text-align: center;
+}
+
+.max-width {
+  width: 100%;
+}
+
+.modal-dialog.modal-xl {
+  min-width: 1400px;
+  max-width: 1400px;
+  width: 1400px;
 }

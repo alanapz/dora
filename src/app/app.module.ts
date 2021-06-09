@@ -3,23 +3,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BootstrapIconComponent } from "src/app/controls/bootstrap-icon/bootstrap-icon.component";
-import { CommitDetailsPopupLinkDirective } from "src/app/controls/commit-details-popup-link/commit-details-popup-link.directive";
-import { RefDetailsPopupLinkDirective } from "src/app/controls/ref-details-popup-link/ref-details-popup-link.directive";
-import { NgbdSortableHeader } from "src/app/controls/table-sortable/table-sortable.directive";
-import { DashboardComponent } from "src/app/main/dashboard/dashboard.component";
-import { RepositoryDetailsBranchesComponent } from "src/app/main/dashboard/repository-details/repository-details-branches/repository-details-branches.component";
-import { RepositoryDetailsStagedComponent } from "src/app/main/dashboard/repository-details/repository-details-staged/repository-details-staged.component";
-import { RepositoryDetailsStashesComponent } from "src/app/main/dashboard/repository-details/repository-details-stashes/repository-details-stashes.component";
-import { RepositoryDetailsUnstagedComponent } from "src/app/main/dashboard/repository-details/repository-details-unstaged/repository-details-unstaged.component";
-import { RepositoryDetailsUntrackedComponent } from "src/app/main/dashboard/repository-details/repository-details-untracked/repository-details-untracked.component";
-import { RepositoryDetailsComponent } from "src/app/main/dashboard/repository-details/repository-details.component";
-import { RepositoryListComponent } from "src/app/main/dashboard/repository-list/repository-list.component";
+import { AppControlsModule } from "src/app/controls/app-controls.module";
+import { AppDirectivesModule } from "src/app/directives/app-directives.module";
+import { AppDashboardComponent } from "src/app/main/app-dashboard.component";
+import { BranchesDashboardModule } from "src/app/main/branches-dashboard/branches-dashboard.module";
 import { RefDetailsPopupComponent } from "src/app/main/popups/ref-details/ref-details-popup.component";
-import { DurationPipe } from "src/app/utils/duration.pipe";
-import { MessagePipe } from "src/app/utils/message.pipe";
-import { NumericPipe } from "src/app/utils/numeric.pipe";
-import { TimestampPipe } from "src/app/utils/timestamp.pipe";
+import { RepositoryDashboardModule } from "src/app/main/repository-dashboard/repository-dashboard.module";
+import { AppPipesModule } from "src/app/pipes/app-pipes.module";
+import { GraphQLService } from "src/app/services/graphql.service";
+import { RepositoryService } from "src/app/services/repository.service";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,24 +19,9 @@ import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [
-    NgbdSortableHeader,
-    BootstrapIconComponent,
-    DurationPipe,
-    NumericPipe,
-    TimestampPipe,
-    MessagePipe,
     AppComponent,
-    DashboardComponent,
-    RepositoryListComponent,
-    RepositoryDetailsComponent,
-    RepositoryDetailsBranchesComponent,
-    RepositoryDetailsUntrackedComponent,
-    RepositoryDetailsUnstagedComponent,
-    RepositoryDetailsStagedComponent,
-    RepositoryDetailsStashesComponent,
-    RefDetailsPopupComponent,
-    RefDetailsPopupLinkDirective,
-    CommitDetailsPopupLinkDirective
+    AppDashboardComponent,
+    RefDetailsPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -53,9 +30,14 @@ import { GraphQLModule } from './graphql.module';
     DragDropModule,
     GraphQLModule,
     HttpClientModule,
+    AppControlsModule,
+    AppDirectivesModule,
+    AppPipesModule,
+    RepositoryDashboardModule,
+    BranchesDashboardModule,
   ],
   entryComponents: [RefDetailsPopupComponent],
-  providers: [],
+  providers: [GraphQLService, RepositoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

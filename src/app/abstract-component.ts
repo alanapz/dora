@@ -7,7 +7,9 @@ export abstract class AbstractComponent implements OnInit, OnDestroy, AfterViewI
 
   protected abstract injector: Injector;
 
-  private readonly onDestroy = new Subject<void>();
+  private readonly onDestroy = new Subject<unknown>();
+
+  private _destroyed: boolean = false;
 
   private waitCount = 0;
 
@@ -20,8 +22,8 @@ export abstract class AbstractComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   ngOnDestroy(): void {
-    this.onDestroy.next();
-    this.onDestroy.complete();
+    this.onDestroy.next({});
+    this._destroyed = true;
   }
 
   incrementWaitCount(): () => void {
@@ -31,6 +33,10 @@ export abstract class AbstractComponent implements OnInit, OnDestroy, AfterViewI
 
   get loadComplete(): boolean {
     return (this.waitCount === 0);
+  }
+
+  get destroyed(): boolean {
+    return this._destroyed;
   }
 
   untilDestroyed<T>(): MonoTypeOperatorFunction<T> {

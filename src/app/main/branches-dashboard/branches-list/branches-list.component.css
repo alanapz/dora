@@ -1,0 +1,4 @@
+#repo-table tr td:first-child {
+  width: 1%;
+  white-space: nowrap;
+}

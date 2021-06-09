@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { environment } from "src/environments/environment";
 
 @Component({
@@ -6,9 +6,14 @@ import { environment } from "src/environments/environment";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
-  readonly title = 'gitql-web';
+  readonly title = 'dora (the git explorer)';
+
+  ngOnInit() {
+    console.log(this.title);
+    console.log(environment);
+  }
 
   get readmeUrl() {
     return "https://github.com/alanapz/gitql/blob/develop/README.md"

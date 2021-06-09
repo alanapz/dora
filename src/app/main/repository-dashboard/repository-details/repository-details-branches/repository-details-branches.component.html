@@ -1,0 +1,10 @@
+<ul class="nav nav-pills">
+  <li class="nav-item">
+    <a class="nav-link {{ active === 'summary' ? 'active' : '' }}" href="#" (click)="tabClicked('summary')">Summary</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{ active === 'commits' ? 'active' : '' }}" href="#" (click)="tabClicked('commits')">Commits</a>
+  </li>
+</ul>
+<app-repository-details-branches-summary *ngIf="active === 'summary'" [repo]="repo"></app-repository-details-branches-summary>
+<app-repository-details-branches-commits *ngIf="active === 'commits'" [repo]="repo"></app-repository-details-branches-commits>

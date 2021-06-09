@@ -1,14 +1,11 @@
 import { Component, Injector, Input } from '@angular/core';
 import { gql } from "@apollo/client/core";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Apollo } from "apollo-angular";
-import { OperationVariables } from "apollo-client";
-import { DocumentNode } from "graphql";
-import { of } from "rxjs";
 import { map, mergeMap } from "rxjs/operators";
 import { AbstractComponent } from "src/app/abstract-component";
-import { unwrapApolloResult } from "src/app/utils/gql-result.operator";
-import { GitRef, GitRepository } from "src/generated/graphql";
+import { AppUtils } from "src/app/app-utils";
+import { GraphQLService } from "src/app/services/graphql.service";
+import { GitCommit, GitRef, GitRepository, GitWebUrl } from "src/generated/graphql";
 import { nonNullNotEmpty } from "src/utils/check";
 import { utils } from "src/utils/utils";
 
@@ -27,9 +24,11 @@ export class RefDetailsPopupComponent extends AbstractComponent {
 
   ref?: GitRef;
 
+  private readonly refsSeen = new Set<string>();
+
   constructor(
     protected readonly injector: Injector,
-    private readonly apollo: Apollo,
+    private readonly graphql: GraphQLService,
     private readonly activeModal: NgbActiveModal) {
     super();
   }
@@ -43,41 +42,82 @@ export class RefDetailsPopupComponent extends AbstractComponent {
 
     const waitComplete = this.incrementWaitCount();
 
-    const query: DocumentNode = gql`
+    const query = gql`
       query getRefDetails($repoPath: String!, $refName: String!) {
         result: repository(path: $repoPath) {
           ref(name: $refName) {
-            refName,
-            displayName,
+            refName
+            displayName
+            repository {
+              hostPath
+              webUrls { remote { name }, url }
+            }
             ancestors(count: 100) {
-              id,
+              id
               author { name, emailAddress, timestamp },
-              committer { name, emailAddress, timestamp },
-              subject,
-              message,
-              refNotes
+              committer { name, emailAddress, timestamp }
+              subject
+              message
+              reachableBy {
+                refName
+                displayName
+                ... on GitTrackingBranch {
+                  isTrunk
+                  webUrl { remote { name }, url }
+                }
+              }
+              webUrls { remote { name }, url }
+            },
+            ... on GitBranch {
+              upstream {
+                webUrl { remote { name }, url },
+              }
+            }
+            ... on GitTrackingBranch {
+              webUrl { remote { name }, url },
             }
           }
         }
       }
     `;
 
-    const variables: OperationVariables = {
-      repoPath: this.repoPath,
-      refName: this.refName
-    };
+    const variables = { repoPath: this.repoPath, refName: this.refName };
 
-    this.apollo.query<{ result: GitRepository }>({query, variables})
-      .pipe(unwrapApolloResult())
+    this.graphql.query<{ result: GitRepository }>({query, variables})
       .pipe(map(result => result.result.ref))
       .pipe(mergeMap(result => {
         this.ref = result;
         waitComplete();
-        return of(void 0);
-      })).subscribe(utils.subscriber());
+        return utils.ofVoid();
+      }))
+      .pipe(this.untilDestroyed())
+      .subscribe(utils.subscriber());
   }
 
   closePanel() {
     this.activeModal.close(null);
+  }
+
+  get commits(): GitCommit[] {
+    this.refsSeen.clear();
+    return this.ref?.ancestors || [];
+  }
+
+  isNewRef(refName: string): boolean {
+    if (this.refsSeen.has(refName)) {
+      return false;
+    }
+    this.refsSeen.add(refName);
+    return true;
+  }
+
+  get webUrls(): GitWebUrl[] {
+    if (AppUtils.isRefBranch(this.ref) && this.ref.upstream && this.ref.upstream.webUrl) {
+      return [ this.ref.upstream.webUrl ];
+    }
+    if (AppUtils.isRefTrackingBranch(this.ref) && this.ref.webUrl) {
+      return [ this.ref.webUrl ];
+    }
+    return [];
   }
 }

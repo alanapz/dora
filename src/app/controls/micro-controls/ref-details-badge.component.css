@@ -1,0 +1,7 @@
+.badge a {
+  color: white;
+}
+
+.badge >>> a {
+  color: white;
+}

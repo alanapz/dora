@@ -1,0 +1,17 @@
+<div *ngIf="qts" ngbDropdown container="body">
+  <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle [disabled]="qts.isAnySelected() ? '' : 'disabled'">Actions</button>
+  <div ngbDropdownMenu>
+    <!-- We need to unroll loop thanks to: https://github.com/valor-software/ngx-bootstrap/issues/2892 -->
+    <button ngbDropdownItem *ngIf="qts.actions.length > 0" (click)="onClick(qts.actions[0])" [disabled]="!qts.actions[0].enabledCount">{{ qts.actions[0].label.replace("###", qts.actions[0].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 1" (click)="onClick(qts.actions[1])" [disabled]="!qts.actions[1].enabledCount">{{ qts.actions[1].label.replace("###", qts.actions[1].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 2" (click)="onClick(qts.actions[2])" [disabled]="!qts.actions[2].enabledCount">{{ qts.actions[2].label.replace("###", qts.actions[2].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 3" (click)="onClick(qts.actions[3])" [disabled]="!qts.actions[3].enabledCount">{{ qts.actions[3].label.replace("###", qts.actions[3].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 4" (click)="onClick(qts.actions[4])" [disabled]="!qts.actions[4].enabledCount">{{ qts.actions[4].label.replace("###", qts.actions[4].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 5" (click)="onClick(qts.actions[5])" [disabled]="!qts.actions[5].enabledCount">{{ qts.actions[5].label.replace("###", qts.actions[5].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 6" (click)="onClick(qts.actions[6])" [disabled]="!qts.actions[6].enabledCount">{{ qts.actions[6].label.replace("###", qts.actions[6].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 7" (click)="onClick(qts.actions[7])" [disabled]="!qts.actions[7].enabledCount">{{ qts.actions[7].label.replace("###", qts.actions[7].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 8" (click)="onClick(qts.actions[8])" [disabled]="!qts.actions[8].enabledCount">{{ qts.actions[8].label.replace("###", qts.actions[8].enabledCount.toString()) }}</button>
+    <button ngbDropdownItem *ngIf="qts.actions.length > 9" (click)="onClick(qts.actions[9])" [disabled]="!qts.actions[9].enabledCount">{{ qts.actions[9].label.replace("###", qts.actions[9].enabledCount.toString()) }}</button>
+    <!-- <div class="dropdown-divider"></div> -->
+  </div>
+</div>

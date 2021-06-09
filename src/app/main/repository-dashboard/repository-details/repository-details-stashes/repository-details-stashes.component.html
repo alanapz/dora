@@ -1,0 +1,35 @@
+<p>Stashes - <b>Warning: Stashes are only kept for 14 days by default (unless otherwise reachable)</b>:</p>
+<table id="stashes-table" class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('name')">Name</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('date')">Date</th>
+    <th scope="col">Message</th>
+    <th scope="col">
+      <div ngbDropdown container="body">
+        <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
+      </div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let stash of stashes">
+    <tr>
+      <td><input type="checkbox" (click)="qts.toggleObject(stash)" [checked]="(qts.isSelected(stash) ? 'checked' : '')" /></td>
+      <td>{{ stash.displayName }}</td>
+      <td data-toggle="tooltip" data-html="true" title="{{ stash.timestamp | timestamp:'full' }}">
+        <span *ngIf="numberOfDays(stash) < 7" class="badge badge-primary">{{ stash.timestamp | duration }}</span>
+        <span *ngIf="!(numberOfDays(stash) < 7) && numberOfDays(stash) < 12" class="badge badge-warning">{{ stash.timestamp | duration }}</span>
+        <span *ngIf="!(numberOfDays(stash) < 12)" class="badge badge-danger">{{ stash.timestamp | duration }}</span>
+      </td>
+      <td data-toggle="tooltip" data-html="true" title="{{ stash.message }}">{{ stash.message | truncate:160 }}</td>
+      <td class="overflow-hidden">
+        <div ngbDropdown container="body">
+          <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
+        </div>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

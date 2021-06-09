@@ -1,0 +1,98 @@
+<div class="d-flex justify-content-center" *ngIf="!loadComplete">
+  <div class="spinner-border" role="status"></div>
+</div>
+
+<div *ngIf="loadComplete" class="max-width">
+
+  <hr />
+
+  <div *ngIf="fullScreenMode" class="form-group">
+    <form>
+      <div class="row">
+        <div class="col">
+          <input name="filterBy" type="text" class="form-control" placeholder="Search" [(ngModel)]="filterBy">
+        </div>
+        <div class="col" style="text-align: right;">
+          <button (click)="onFetchAllClicked()" class="btn btn-success btn-sm"><app-bootstrap-icon iconName="bi-download" iconSize="1.25em"></app-bootstrap-icon>Fetch All</button>
+          <button (click)="onRefreshClicked()" class="btn btn-primary btn-sm" style="margin-left: 1em;"><app-bootstrap-icon iconName="bi-arrow-repeat" iconSize="1.25em"></app-bootstrap-icon>Refresh</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <table class="table table-striped data-table max-width">
+    <thead>
+      <tr>
+        <th *ngIf="fullScreenMode" scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+        <th scope="col" (sort)="onSort($event)" [sortable]="propName('path')">Path</th>
+        <ng-container *ngIf="fullScreenMode">
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('lastFetchDate')">Last Fetched</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('lastCommitDate')">Last Commit</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('untracked')" descending>Untracked<br/>Files</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('unstaged')" descending>Unstaged<br/>Changes</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('staged')" descending>Staged<br/>Changes</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('headDisplayName')" descending>Head</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branches')" descending>Branches</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesWithNoUpstream')" descending>No Upstream</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfUpstream')" descending>+ Upstream</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesBehindUpstream')" descending>- Upstream</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfAndBehindUpstream')" descending>+/- Upstream</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfParent')" descending>+ Parent</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesBehindParent')" descending>- Parent</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfAndBehindParent')" descending>+/- Parent</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('stashes')" descending>Stashes</th>
+          <th scope="col" (sort)="onSort($event)" [sortable]="propName('warnings')" descending><app-bootstrap-icon iconName="bi-exclamation-circle-fill" iconSize="1.5em"></app-bootstrap-icon></th>
+          <th scope="col">
+            <app-quick-table-select-header [qts]="qts"></app-quick-table-select-header>
+          </th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let repository of repositories">
+        <tr>
+          <td *ngIf="fullScreenMode"><input type="checkbox" (click)="qts.toggleObject(repository)" [checked]="(qts.isSelected(repository) ? 'checked' : '')" /></td>
+          <td>
+            <a href="#" (click)="onClick(repository, 'path')">{{ repository.path }}</a>
+            <app-web-url-link *ngFor="let webUrl of repository.webUrls" [link]="webUrl"></app-web-url-link>
+          </td>
+          <td *ngIf="repository.busy && fullScreenMode" colspan="18">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+          </td>
+          <td *ngIf="!repository.busy && !repository.loaded && fullScreenMode" colspan="18">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+          </td>
+          <ng-container *ngIf="repository.loaded && fullScreenMode">
+            <td data-toggle="tooltip" data-html="true" title="{{ (repository.lastFetchDate || null) | timestamp:'full' }}"><a href="#" (click)="onClick(repository, 'lastFetchDate')">{{ (repository.lastFetchDate || null) | duration }}</a></td>
+            <td data-toggle="tooltip" data-html="true" title="{{ (repository.lastCommitDate || null) | timestamp:'full' }}">
+              <a href="#" (click)="onClick(repository, 'lastCommitDate')">{{ (repository.lastCommitDate || null) | timestamp:'compact' }}</a>
+              <app-web-url-link *ngFor="let webUrl of repository.lastCommitWebUrls" [link]="webUrl"></app-web-url-link>
+            </td>
+            <td><a href="#" (click)="onClick(repository, 'untracked')">{{ repository.untracked | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'unstaged')">{{ repository.unstaged | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'staged')">{{ repository.staged | numeric }}</a></td>
+            <td *ngIf="repository.headRefName && repository.headDisplayName"><a href="#" refdetails [repoPath]="repository.path" [refName]="repository.headRefName" [displayName]="repository.headDisplayName">{{ (repository.headDisplayName || '-') | truncate:30 }}</a></td>
+            <td *ngIf="!(repository.headRefName && repository.headDisplayName)">-</td>
+            <td><a href="#" (click)="onClick(repository, 'branches')">{{ repository.branches | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesWithNoUpstream')">{{ repository.branchesWithNoUpstream | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesAheadOfUpstream')">{{ repository.branchesAheadOfUpstream | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesBehindUpstream')">{{ repository.branchesBehindUpstream | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesAheadOfAndBehindUpstream')">{{ repository.branchesAheadOfAndBehindUpstream | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesAheadOfParent')">{{ repository.branchesAheadOfParent | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesBehindParent')">{{ repository.branchesBehindParent | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'branchesAheadOfAndBehindParent')">{{ repository.branchesAheadOfAndBehindParent | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'stashes')">{{ repository.stashes | numeric }}</a></td>
+            <td><a href="#" (click)="onClick(repository, 'warnings')">{{ repository.warnings | numeric }}</a></td>
+            <td class="overflow-hidden">
+              <app-quick-table-select-row [qts]="qts" [item]="repository"></app-quick-table-select-row>
+            </td>
+          </ng-container>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
