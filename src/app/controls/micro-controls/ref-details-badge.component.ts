@@ -1,6 +1,7 @@
 import { Component, Injector, Input } from '@angular/core';
 import { AbstractComponent } from "src/app/abstract-component";
-import { GitRef } from "src/generated/graphql";
+import { AppUtils } from "src/app/app-utils";
+import { GitRef, GitWebUrl } from "src/generated/graphql";
 
 @Component({
   selector: 'app-ref-details-badge',
@@ -19,7 +20,18 @@ export class RefDetailsBadgeComponent extends AbstractComponent {
     super();
   }
 
-  isType(type: 'GitBranch' | 'GitTrackingBranch' | 'GitTag'): boolean {
-    return (this.ref as any).__typename === type;
+  get isBranch(): boolean {
+    return AppUtils.isRefBranch(this.ref);
+  }
+
+  get isTrackingBranch(): boolean {
+    return AppUtils.isRefTrackingBranch(this.ref);
+  }
+
+  get webUrls(): GitWebUrl[] {
+    if (AppUtils.isRefTrackingBranch(this.ref) && this.ref.webUrl) {
+      return [ this.ref!.webUrl ];
+    }
+    return [];
   }
 }
