@@ -54,7 +54,8 @@ export class RefDetailsPopupComponent extends AbstractComponent {
               committer { name, emailAddress, timestamp },
               subject,
               message,
-              refNotes
+              refNotes,
+              webUrls { remote { name }, url }
             }
           }
         }

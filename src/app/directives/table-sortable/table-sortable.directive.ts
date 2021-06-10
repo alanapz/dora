@@ -1,7 +1,13 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
-import { SortDirection, SortEvent } from "src/app/controls/table-sortable/table-sortable.types";
 
 // https://ng-bootstrap.github.io/#/components/table/examples
+
+export type SortDirection = 'asc' | 'desc' | '';
+
+export interface SortEvent {
+  columnName: string;
+  direction: SortDirection;
+}
 
 @Directive({
   selector: 'th[sortable]',

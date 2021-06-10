@@ -98,6 +98,7 @@ export interface GitCommit extends GitObject {
   ancestors: GitCommit[];
   refNotes: string[];
   reachableBy: GitRef[];
+  webUrls: GitWebUrl[];
 }
 
 export interface GitPrincipal {
@@ -116,8 +117,9 @@ export interface GitRefDistance {
 
 export interface GitRemote {
   __typename?: 'GitRemote';
+  repository: GitRepository;
   name: string;
-  fetchUrl: string[];
+  fetchUrl: string;
   pushUrls: string[];
 }
 
@@ -135,9 +137,12 @@ export interface GitRepository {
   trackingBranch?: GitTrackingBranch;
   stashes: GitStash[];
   stash?: GitStash;
+  remotes: GitRemote[];
+  remote?: GitRemote;
   lastFetchDate?: number;
   head?: GitRef;
   workingDirectory?: GitWorkingDirectory;
+  webUrls: GitWebUrl[];
 }
 
 export interface GitStash extends GitRef {
@@ -157,6 +162,7 @@ export interface GitTag extends GitRef {
   tagName: string;
   message: string;
   author: GitPrincipal;
+  webUrls: GitWebUrl[];
   refName: string;
   displayName: string;
   repository: GitRepository;
@@ -169,6 +175,7 @@ export interface GitTrackingBranch extends GitRef {
   __typename?: 'GitTrackingBranch';
   remote: GitRemote;
   branchName: string;
+  webUrl?: GitWebUrl;
   refName: string;
   displayName: string;
   repository: GitRepository;
@@ -208,12 +215,21 @@ export interface GitTreeSubtreeItem extends GitTreeItem {
   mode: number;
 }
 
+export interface GitWebUrl {
+  __typename?: 'GitWebUrl';
+  remote: GitRemote;
+  url: string;
+}
+
 export interface GitWorkingDirectory {
   __typename?: 'GitWorkingDirectory';
   path: string;
   repository: GitRepository;
+  stagedLength: number;
   staged: GitWorkingDirectoryItem[];
+  unstagedLength: number;
   unstaged: GitWorkingDirectoryItem[];
+  untrackedLength: number;
   untracked: GitWorkingDirectoryItem[];
 }
 

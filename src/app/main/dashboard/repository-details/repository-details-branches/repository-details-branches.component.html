@@ -24,10 +24,11 @@
       <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.committer.timestamp | timestamp:'full' }}">{{ branch.commit.committer.timestamp | timestamp:'compact' }}</td>
       <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.author.name }} &lt;{{ branch.commit.author.emailAddress }}&gt;">{{ branch.commit.author.name }}</td>
       <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.message }}">{{ branch.commit.subject }}</td>
-      <ng-container [ngSwitch]="!!branch.upstream">
-        <td *ngSwitchCase="true"><a href="#" refdetails [repoPath]="repoPath" [refName]="branch.upstream!.refName" [displayName]="branch.upstream!.displayName">{{ branch.upstream!.displayName }}</a></td>
-        <td *ngSwitchDefault><span class="badge badge-warning">No upstream</span></td>
-      </ng-container>
+      <td *ngIf="branch.upstream">
+        <a href="#" refdetails [repoPath]="repoPath" [refName]="branch.upstream.refName" [displayName]="branch.upstream.displayName">{{ branch.upstream.displayName }}</a>
+        <app-web-url-link [link]="branch.upstream.webUrl"></app-web-url-link>
+      </td>
+      <td *ngIf="!branch.upstream"><span class="badge badge-warning">No upstream</span></td>
       <ng-container [ngSwitch]="branch.upstreamDistance && branch.upstreamDistance.ahead > 0">
         <td *ngSwitchCase="true"><span class="badge badge-danger">{{ branch.upstreamDistance!.ahead }} Ahead</span></td>
         <td *ngSwitchDefault>-</td>

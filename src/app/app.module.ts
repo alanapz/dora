@@ -3,12 +3,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BootstrapIconComponent } from "src/app/controls/bootstrap-icon/bootstrap-icon.component";
-import { CommitDetailsPopupLinkDirective } from "src/app/controls/commit-details-popup-link/commit-details-popup-link.directive";
-import { RefDetailsBadgeComponent } from "src/app/controls/micro-controls/ref-details-badge.component";
-import { RefDetailsPopupLinkDirective } from "src/app/controls/ref-details-popup-link/ref-details-popup-link.directive";
-import { NgbdSortableHeader } from "src/app/controls/table-sortable/table-sortable.directive";
-import { ToastsContainer } from "src/app/controls/toasts-container/toasts-container.component";
+import { AppControlsModule } from "src/app/controls/app-controls.module";
+import { AppDirectivesModule } from "src/app/directives/app-directives.module";
 import { DashboardComponent } from "src/app/main/dashboard/dashboard.component";
 import { RepositoryDetailsBranchesComponent } from "src/app/main/dashboard/repository-details/repository-details-branches/repository-details-branches.component";
 import { RepositoryDetailsRecentCommitsComponent } from "src/app/main/dashboard/repository-details/repository-details-recent-commits/repository-details-recent-commits.component";
@@ -19,11 +15,8 @@ import { RepositoryDetailsUntrackedComponent } from "src/app/main/dashboard/repo
 import { RepositoryDetailsComponent } from "src/app/main/dashboard/repository-details/repository-details.component";
 import { RepositoryListComponent } from "src/app/main/dashboard/repository-list/repository-list.component";
 import { RefDetailsPopupComponent } from "src/app/main/popups/ref-details/ref-details-popup.component";
+import { AppPipesModule } from "src/app/pipes/app-pipes.module";
 import { RepositoryService } from "src/app/services/repository.service";
-import { DurationPipe } from "src/app/utils/duration.pipe";
-import { NumericPipe } from "src/app/utils/numeric.pipe";
-import { TimestampPipe } from "src/app/utils/timestamp.pipe";
-import { TruncatePipe } from "src/app/utils/truncate.pipe";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -31,13 +24,6 @@ import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [
-    NgbdSortableHeader,
-    BootstrapIconComponent,
-    DurationPipe,
-    NumericPipe,
-    TimestampPipe,
-    TruncatePipe,
-    RefDetailsBadgeComponent,
     AppComponent,
     DashboardComponent,
     RepositoryListComponent,
@@ -48,10 +34,7 @@ import { GraphQLModule } from './graphql.module';
     RepositoryDetailsStagedComponent,
     RepositoryDetailsStashesComponent,
     RepositoryDetailsRecentCommitsComponent,
-    ToastsContainer,
-    RefDetailsPopupComponent,
-    RefDetailsPopupLinkDirective,
-    CommitDetailsPopupLinkDirective
+    RefDetailsPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -60,6 +43,9 @@ import { GraphQLModule } from './graphql.module';
     DragDropModule,
     GraphQLModule,
     HttpClientModule,
+    AppControlsModule,
+    AppDirectivesModule,
+    AppPipesModule
   ],
   entryComponents: [RefDetailsPopupComponent],
   providers: [RepositoryService],

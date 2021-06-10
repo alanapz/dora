@@ -23,7 +23,12 @@
     </button>
   </div>
   <div class="card-body">
-    <h5 class="card-title">{{repoPath}}</h5>
+    <h5 class="card-title">
+      {{repoPath}}
+      <ng-container *ngIf="repo && repo.webUrls && repo.webUrls.length">
+        <app-web-url-link *ngFor="let link of repo.webUrls" [link]="link"></app-web-url-link>
+      </ng-container>
+    </h5>
     <p class="card-text">Last fetched: (Fetch Now).</p>
     <ngb-accordion [closeOthers]="true" activeIds="panel-head" #panelAccordion>
       <ngb-panel id="panel-head" *ngIf="repoHead && repoHeadCommit">

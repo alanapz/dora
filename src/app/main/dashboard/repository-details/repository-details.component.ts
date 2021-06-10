@@ -96,6 +96,10 @@ export class RepositoryDetailsComponent extends AbstractComponent {
             unstaged { status, path },
             untracked { status, path }
           },
+          webUrls {
+            url,
+            remote { name }
+          },
           head {
             refName,
             displayName,
@@ -105,7 +109,7 @@ export class RepositoryDetailsComponent extends AbstractComponent {
               committer { name, emailAddress, timestamp },
               subject,
               message,
-              refNotes
+              refNotes,
             },
             ... on GitBranch {
               upstreamDistance { ahead, behind }
@@ -114,7 +118,11 @@ export class RepositoryDetailsComponent extends AbstractComponent {
           branches {
             refName,
             displayName,
-            upstream { refName, displayName },
+            upstream {
+              refName,
+              displayName,
+              webUrl { remote { name }, url }
+            },
             upstreamDistance { ahead, behind },
             commit {
               id,
@@ -122,7 +130,8 @@ export class RepositoryDetailsComponent extends AbstractComponent {
               committer { name, emailAddress, timestamp },
               subject,
               message,
-              refNotes
+              refNotes,
+              webUrls { remote { name }, url }
             }
           },
           stashes {
@@ -137,7 +146,14 @@ export class RepositoryDetailsComponent extends AbstractComponent {
             committer { name, emailAddress, timestamp },
             subject,
             message,
-            reachableBy { refName, displayName }
+            reachableBy {
+              refName,
+              displayName,
+              ... on GitTrackingBranch {
+                webUrl { remote { name }, url }
+              }
+            },
+            webUrls { remote { name }, url }
           }
         }
       }
@@ -195,9 +211,10 @@ export class RepositoryDetailsComponent extends AbstractComponent {
     this.repositorySelected?.next(null);
   }
 
-  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+  @HostListener('document:keydown', ['$event'])
+  onKeydownHandler(event: KeyboardEvent) {
     if (event.code === 'Escape') {
-      this.closePanel();
+      // this.closePanel();
     }
   }
 }

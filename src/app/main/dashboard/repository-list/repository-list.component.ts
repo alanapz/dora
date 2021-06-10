@@ -5,8 +5,7 @@ import { DocumentNode } from "graphql";
 import { Observable, of, Subject } from "rxjs";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { AbstractComponent } from "src/app/abstract-component";
-import { NgbdSortableHeader } from "src/app/controls/table-sortable/table-sortable.directive";
-import { SortEvent } from "src/app/controls/table-sortable/table-sortable.types";
+import { NgbdSortableHeader, SortEvent } from "src/app/directives/table-sortable/table-sortable.directive";
 import {
   RepositoryModifiedEvent,
   RepositorySelectedEvent,
@@ -153,9 +152,9 @@ export class RepositoryListComponent extends AbstractComponent {
             committer { timestamp }
           },
           workingDirectory {
-            staged { status },
-            unstaged { status },
-            untracked { status }
+            stagedLength,
+            unstagedLength,
+            untrackedLength
           },
           head {
             refName,
@@ -189,9 +188,9 @@ export class RepositoryListComponent extends AbstractComponent {
         repository.busy = false;
         repository.lastFetchDate = (result.lastFetchDate || null);
         repository.lastCommitDate = (result.recentCommits && result.recentCommits.length ? result.recentCommits[0].committer.timestamp : null);
-        repository.staged = workingDirectory.staged.length;
-        repository.unstaged = workingDirectory.unstaged.length;
-        repository.untracked = workingDirectory.untracked.length;
+        repository.staged = (workingDirectory?.stagedLength || null);
+        repository.unstaged = (workingDirectory?.unstagedLength || null);
+        repository.untracked = (workingDirectory?.untrackedLength || null);
         repository.headRefName = (result.head?.refName || null);
         repository.headDisplayName = (result.head?.displayName || null);
         repository.branches = result.branches.length;

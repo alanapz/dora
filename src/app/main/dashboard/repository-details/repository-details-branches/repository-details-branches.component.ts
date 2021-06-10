@@ -1,7 +1,6 @@
 import { Component, Injector, Input, QueryList, ViewChildren } from '@angular/core';
 import { AbstractComponent } from "src/app/abstract-component";
-import { NgbdSortableHeader } from "src/app/controls/table-sortable/table-sortable.directive";
-import { SortEvent } from "src/app/controls/table-sortable/table-sortable.types";
+import { NgbdSortableHeader, SortEvent } from "src/app/directives/table-sortable/table-sortable.directive";
 import { QuickTableSelect } from "src/app/utils/quick-table-select";
 import { GitBranch, GitRepository } from "src/generated/graphql";
 import { SortCallback, utils } from "src/utils/utils";
