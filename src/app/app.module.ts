@@ -6,6 +6,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppControlsModule } from "src/app/controls/app-controls.module";
 import { AppDirectivesModule } from "src/app/directives/app-directives.module";
 import { DashboardComponent } from "src/app/main/dashboard/dashboard.component";
+import { RepositoryDetailsBranchesCommitsComponent } from "src/app/main/dashboard/repository-details/repository-details-branches/repository-details-branches-commits/repository-details-branches-commits.component";
+import { RepositoryDetailsBranchesSummaryComponent } from "src/app/main/dashboard/repository-details/repository-details-branches/repository-details-branches-summary/repository-details-branches-summary.component";
 import { RepositoryDetailsBranchesComponent } from "src/app/main/dashboard/repository-details/repository-details-branches/repository-details-branches.component";
 import { RepositoryDetailsRecentCommitsComponent } from "src/app/main/dashboard/repository-details/repository-details-recent-commits/repository-details-recent-commits.component";
 import { RepositoryDetailsStagedComponent } from "src/app/main/dashboard/repository-details/repository-details-staged/repository-details-staged.component";
@@ -29,6 +31,8 @@ import { GraphQLModule } from './graphql.module';
     RepositoryListComponent,
     RepositoryDetailsComponent,
     RepositoryDetailsBranchesComponent,
+    RepositoryDetailsBranchesSummaryComponent,
+    RepositoryDetailsBranchesCommitsComponent,
     RepositoryDetailsUntrackedComponent,
     RepositoryDetailsUnstagedComponent,
     RepositoryDetailsStagedComponent,

@@ -35,7 +35,7 @@
                 <button ngbDropdownItem (click)="onBulkAction('fetch')">Fetch</button>
                 <button ngbDropdownItem (click)="onBulkAction('setDefaultUpstream')">Set Default Upstream</button>
                 <div class="dropdown-divider"></div>
-                <button ngbDropdownItem>Reset To Pristine</button>
+                <button ngbDropdownItem [disabled]="true">Reset To Pristine</button>
               </div>
             </div>
           </th>
@@ -81,7 +81,7 @@
                 <div ngbDropdownMenu>
                   <button ngbDropdownItem (click)="onAction(repository, 'fetch')">Fetch</button>
                   <div class="dropdown-divider"></div>
-                  <button ngbDropdownItem>Reset To Pristine</button>
+                  <button ngbDropdownItem [disabled]="true">Reset To Pristine</button>
                 </div>
               </div>
             </td>

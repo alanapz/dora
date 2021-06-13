@@ -122,19 +122,19 @@ export class RepositoryDetailsComponent extends AbstractComponent {
               refName,
               displayName,
               webUrl { remote { name }, url },
-              isTrunk
+              isTrunk,
+              parent {
+                refName,
+                displayName,
+                webUrl { remote { name }, url },
+                isTrunk
+              },
+              parentDistance {
+                ahead,
+                behind
+              },
             },
             upstreamDistance {
-              ahead,
-              behind
-            },
-            parent {
-              refName,
-              displayName,
-              webUrl { remote { name }, url },
-              isTrunk
-            },
-            parentDistance {
               ahead,
               behind
             },

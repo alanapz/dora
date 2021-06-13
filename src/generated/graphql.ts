@@ -57,8 +57,14 @@ export interface GitRepositoryMutator {
 
 export interface IQuery {
   __typename?: 'IQuery';
+  config(): GQLConfig | Promise<GQLConfig>;
   repository(path: string): GitRepository | Promise<GitRepository>;
   searchRepositories(startingPath?: string): GitRepository[] | Promise<GitRepository[]>;
+}
+
+export interface GQLConfig {
+  __typename?: 'GQLConfig';
+  repoRoot: string;
 }
 
 export interface GitBlob extends GitObject {
@@ -74,8 +80,6 @@ export interface GitBranch extends GitRef {
   branchName: string;
   upstream?: GitTrackingBranch;
   upstreamDistance?: GitRefDistance;
-  parent?: GitTrackingBranch;
-  parentDistance?: GitRefDistance;
   refName: string;
   displayName: string;
   repository: GitRepository;

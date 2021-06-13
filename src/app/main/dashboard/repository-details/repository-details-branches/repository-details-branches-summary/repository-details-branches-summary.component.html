@@ -1,0 +1,64 @@
+<table id="branches-table" class="table table-striped data-table">
+  <thead>
+  <tr>
+    <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('name')">Name</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('date')">Last Commit</th>
+    <th scope="col">Commit ID</th>
+    <th scope="col">Status</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('upstream')">Upstream</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('upstreamAhead')" descending>Ahead</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('upstreamBehind')" descending>Behind</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('parent')">Parent</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('parentAhead')" descending>Ahead</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('parentBehind')" descending>Behind</th>
+    <th scope="col">
+      <div ngbDropdown container="body">
+        <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
+      </div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let branch of branches">
+    <tr>
+      <td><input type="checkbox" (click)="qts.toggleObject(branch)" [checked]="(qts.isSelected(branch) ? 'checked' : '')" /></td>
+      <td><a href="#" refdetails [repoPath]="repoPath" [refName]="branch.refName" [displayName]="branch.displayName">{{ branch.displayName | truncate:40 }}</a></td>
+      <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.committer.timestamp | timestamp:'full' }}"><a href="#" commitdetails [repoPath]="repoPath" [commitId]="branch.commit.id">{{ branch.commit.committer.timestamp | timestamp:'compact' }}</a></td>
+      <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.id }}"><a href="#" commitdetails [repoPath]="this.repoPath" [commitId]="branch.commit.id">{{ branch.commit.id.substring(0, 8) }}</a><app-web-url-link *ngFor="let webUrl of branch.commit.webUrls" [link]="webUrl"></app-web-url-link></td>
+      <td>{{ resolveStatus(branch) }}</td>
+      <ng-container>
+        <td *ngIf="branch.upstream"><app-ref-details-badge [repoPath]="repoPath" [ref]="branch.upstream"></app-ref-details-badge></td>
+        <td *ngIf="!branch.upstream">No upstream <app-bootstrap-icon iconName="bi-exclamation-triangle-fill"></app-bootstrap-icon></td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.upstreamDistance && branch.upstreamDistance.ahead">{{ branch.upstreamDistance.ahead }} <app-bootstrap-icon iconName="bi-exclamation-triangle-fill"></app-bootstrap-icon></td>
+        <td *ngIf="branch.upstreamDistance && !branch.upstreamDistance.ahead">0</td>
+        <td *ngIf="!branch.upstreamDistance">-</td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.upstreamDistance">{{ branch.upstreamDistance.behind }}</td>
+        <td *ngIf="!branch.upstreamDistance">-</td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.upstream && branch.upstream.isTrunk">-</td>
+        <td *ngIf="!(branch.upstream && branch.upstream.isTrunk) && branch.upstream && branch.upstream.parent"><app-ref-details-badge [repoPath]="repoPath" [ref]="branch.upstream.parent"></app-ref-details-badge></td>
+        <td *ngIf="!(branch.upstream && branch.upstream.isTrunk) && !(branch.upstream && branch.upstream.parent)">No parent <app-bootstrap-icon iconName="bi-exclamation-triangle-fill"></app-bootstrap-icon></td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.upstream && branch.upstream.parentDistance">{{ branch.upstream.parentDistance.ahead }}</td>
+        <td *ngIf="!(branch.upstream && branch.upstream.parentDistance)">-</td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.upstream && branch.upstream.parentDistance">{{ branch.upstream.parentDistance.behind }}</td>
+        <td *ngIf="!(branch.upstream && branch.upstream.parentDistance)">-</td>
+      </ng-container>
+      <td class="overflow-hidden">
+        <div ngbDropdown container="body">
+          <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
+        </div>
+      </td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

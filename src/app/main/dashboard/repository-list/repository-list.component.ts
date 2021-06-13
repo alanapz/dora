@@ -161,10 +161,12 @@ export class RepositoryListComponent extends AbstractComponent {
           },
           branches {
             branchName,
-            upstream { branchName },
+            upstream {
+              branchName,
+              parent { branchName },
+              parentDistance { ahead, behind }
+            },
             upstreamDistance { ahead, behind }
-            parent { branchName },
-            parentDistance { ahead, behind }
           },
           stashes {
             refName
@@ -185,7 +187,7 @@ export class RepositoryListComponent extends AbstractComponent {
         const workingDirectory = nonNull(result.workingDirectory);
 
         const upstreamDistances = result.branches.filter(b => !!b.upstreamDistance).map(b => b.upstreamDistance!);
-        const parentDistances = result.branches.filter(b => !!b.parentDistance).map(b => b.parentDistance!);
+        const parentDistances = result.branches.filter(b => b.upstream?.parentDistance).map(b => b.upstream!.parentDistance!);
 
         repository.loaded = true;
         repository.busy = false;
