@@ -2,31 +2,30 @@ version: "3"
 
 services:
   gitql-api:
-    container_name: gitql-api
+    container_name: dora-gitql-api
     image: alanmpinder/gitql-api:20210613
     ports:
       - "3000:3000"
     environment:
       - GIT_URL=https://github.com/alanapz/gitql-api.git
       - GIT_BRANCH=main
-      - GQL_ROOT=/repos
     volumes:
       - "gitql-api-data:/gitql-api"
-      - "c:\\dev:/repos"
+      - "${GQL_ROOT}:/repos"
 
-  gitql-web:
-    container_name: gitql-web
-    image: alanmpinder/gitql-api:20210613
+  dora-web:
+    container_name: dora-web
+    image: alanmpinder/dora-web:20210613
     ports:
       - "4200:4200"
     environment:
-      - GIT_URL=https://github.com/alanapz/gitql-api.git
+      - GIT_URL=https://github.com/alanapz/dora.git
       - GIT_BRANCH=main
-      - GQL_ROOT=/repos
     volumes:
-      - "gitql-api-data:/gitql-api"
-      - "c:\\dev:/repos"
+      - "dora-web-data:/dora-web"
 
 volumes:
   gitql-api-data:
+    driver: local
+  dora-web-data:
     driver: local

@@ -1,15 +1,8 @@
 #!/bin/bash
 
+APP_ROOT="/dora-web"
+
 set -euo pipefail
-
-GQL_ROOT="/repos"
-export GQL_ROOT
-
-if [[ ! -d "${GQL_ROOT}" ]]
-then
-    echo "${GQL_ROOT} not mapped"
-    exit 1
-fi
 
 if [[ -z "${GIT_URL}" ]]
 then
@@ -23,12 +16,12 @@ then
     exit 1
 fi
 
-if [[ ! -d "/gitql-api/.git" ]]
+if [[ ! -d "${APP_ROOT}/.git" ]]
 then
-    git clone --branch "${GIT_BRANCH}" "${GIT_URL}" "/gitql-api"
+    git clone --branch "${GIT_BRANCH}" "${GIT_URL}" "${APP_ROOT}"
 fi
 
-cd "/gitql-api"
+cd "${APP_ROOT}"
 
 git remote set-url origin "${GIT_URL}"
 git fetch --prune --quiet
@@ -43,5 +36,4 @@ then
 fi
 
 yarn install --prefer-offline --silent
-ts-node src/generate-typings
-yarn run start
+ng serve --host 0.0.0.0 --disable-host-check

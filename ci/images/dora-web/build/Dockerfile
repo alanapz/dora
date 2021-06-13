@@ -1,7 +1,7 @@
 # Work image, entrypoint reclones repo if necessary
-FROM docker.io/alanmpinder/gitql-api-base:20210613
+FROM docker.io/alanmpinder/dora-web-base:20210613
 
-EXPOSE 3000
+EXPOSE 4200
 
 COPY "work" "/work"
 
