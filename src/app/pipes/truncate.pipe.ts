@@ -5,6 +5,10 @@ export class TruncatePipe implements PipeTransform {
 
   transform(value: string, maxLength: number): string {
 
+    if (!value || !value.length) {
+      return '';
+    }
+
     if (value.length <= maxLength) {
       return value;
     }

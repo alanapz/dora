@@ -38,7 +38,6 @@ interface RepositoryListItem {
   branchesAheadOfUpstream: number | null;
   branchesBehindUpstream: number | null;
   branchesAheadOfAndBehindUpstream: number | null;
-  branchesWithNoParent: number | null;
   branchesAheadOfParent: number | null;
   branchesBehindParent: number | null;
   branchesAheadOfAndBehindParent: number | null;
@@ -164,6 +163,8 @@ export class RepositoryListComponent extends AbstractComponent {
             branchName,
             upstream { branchName },
             upstreamDistance { ahead, behind }
+            parent { branchName },
+            parentDistance { ahead, behind }
           },
           stashes {
             refName
@@ -182,7 +183,9 @@ export class RepositoryListComponent extends AbstractComponent {
       mergeMap(result => {
 
         const workingDirectory = nonNull(result.workingDirectory);
+
         const upstreamDistances = result.branches.filter(b => !!b.upstreamDistance).map(b => b.upstreamDistance!);
+        const parentDistances = result.branches.filter(b => !!b.parentDistance).map(b => b.parentDistance!);
 
         repository.loaded = true;
         repository.busy = false;
@@ -198,6 +201,11 @@ export class RepositoryListComponent extends AbstractComponent {
         repository.branchesAheadOfUpstream = upstreamDistances.filter(ud => ud.ahead > 0 && ud.behind === 0).length;
         repository.branchesBehindUpstream = upstreamDistances.filter(ud => ud.ahead === 0 && ud.behind > 0).length;
         repository.branchesAheadOfAndBehindUpstream = upstreamDistances.filter(ud => ud.ahead > 0 && ud.behind > 0).length;
+
+        repository.branchesAheadOfParent = parentDistances.filter(pd => pd.ahead > 0 && pd.behind === 0).length;
+        repository.branchesBehindParent = parentDistances.filter(pd => pd.ahead === 0 && pd.behind > 0).length;
+        repository.branchesAheadOfAndBehindParent = parentDistances.filter(pd => pd.ahead > 0 && pd.behind > 0).length;
+
         repository.stashes = result.stashes.length;
         repository.warnings = 0;
 

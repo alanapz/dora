@@ -1,10 +1,6 @@
 <ng-container *ngIf="repoPath && ref && ref.refName && ref.displayName">
-  <span *ngIf="isBranch" class="badge badge-success">
-    <a href="#" refdetails [repoPath]="repoPath" [refName]="ref.refName" [displayName]="ref.displayName">{{ ref.displayName | truncate:40 }}</a>
-    <app-web-url-link *ngFor="let webUrl of webUrls" [link]="webUrl"></app-web-url-link>
-  </span>
-  <span *ngIf="isTrackingBranch" class="badge badge-info">
-    <a href="#" refdetails [repoPath]="repoPath" [refName]="ref.refName" [displayName]="ref.displayName">{{ ref.displayName | truncate:40 }}</a>
+  <span class="badge badge-{{branchType}}">
+    <a href="#" refdetails [repoPath]="repoPath" [refName]="ref.refName" [displayName]="ref.displayName">{{ ref.displayName | truncate:35 }}</a>
     <app-web-url-link *ngFor="let webUrl of webUrls" [link]="webUrl"></app-web-url-link>
   </span>
 </ng-container>

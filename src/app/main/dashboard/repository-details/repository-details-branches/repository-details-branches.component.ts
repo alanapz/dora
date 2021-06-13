@@ -5,7 +5,7 @@ import { QuickTableSelect } from "src/app/utils/quick-table-select";
 import { GitBranch, GitRepository } from "src/generated/graphql";
 import { SortCallback, utils } from "src/utils/utils";
 
-declare type BranchesTableSortKey = 'name' | 'date' | 'upstream' | 'upstreamAhead' | 'upstreamBehind';
+declare type BranchesTableSortKey = 'name' | 'date' | 'upstream' | 'upstreamAhead' | 'upstreamBehind' | 'parent' | 'parentAhead' | 'parentBehind';
 
 @Component({
   selector: 'app-repository-details-branches',
@@ -68,6 +68,15 @@ export class RepositoryDetailsBranchesComponent extends AbstractComponent {
     }
     else if (sortKey === 'upstreamBehind') {
       this._sortCallback = { func: branch => branch.upstreamDistance?.behind || 0, descending };
+    }
+    else if (sortKey === 'parent') {
+      this._sortCallback = { func: branch => !!branch.parent, descending };
+    }
+    else if (sortKey === 'parentAhead') {
+      this._sortCallback = { func: branch => branch.parentDistance?.ahead || 0, descending };
+    }
+    else if (sortKey === 'parentBehind') {
+      this._sortCallback = { func: branch => branch.parentDistance?.behind || 0, descending };
     }
   }
 }

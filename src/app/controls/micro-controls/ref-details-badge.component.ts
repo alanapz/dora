@@ -2,6 +2,7 @@ import { Component, Injector, Input } from '@angular/core';
 import { AbstractComponent } from "src/app/abstract-component";
 import { AppUtils } from "src/app/app-utils";
 import { GitRef, GitWebUrl } from "src/generated/graphql";
+import { nonNull, nonNullNotEmpty } from "src/utils/check";
 
 @Component({
   selector: 'app-ref-details-badge',
@@ -20,12 +21,30 @@ export class RefDetailsBadgeComponent extends AbstractComponent {
     super();
   }
 
-  get isBranch(): boolean {
-    return AppUtils.isRefBranch(this.ref);
+  ngOnInit() {
+    super.ngOnInit();
+
+    nonNullNotEmpty(this.repoPath, "repoPath");
+    nonNull(this.ref, "ref");
+    nonNullNotEmpty(this.ref?.refName, "refName");
+    nonNullNotEmpty(this.ref?.displayName, "displayName");
+
+    if (AppUtils.isRefTrackingBranch(this.ref)) {
+      nonNull(this.ref.isTrunk, "isTrunk");
+    }
   }
 
-  get isTrackingBranch(): boolean {
-    return AppUtils.isRefTrackingBranch(this.ref);
+  get branchType() {
+    if (AppUtils.isRefBranch(this.ref)) {
+      return 'primary';
+    }
+    if (AppUtils.isRefTrackingBranch(this.ref) && !this.ref.isTrunk) {
+      return 'info';
+    }
+    if (AppUtils.isRefTrackingBranch(this.ref) && this.ref.isTrunk) {
+      return 'success';
+    }
+    return null;
   }
 
   get webUrls(): GitWebUrl[] {

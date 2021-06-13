@@ -121,9 +121,23 @@ export class RepositoryDetailsComponent extends AbstractComponent {
             upstream {
               refName,
               displayName,
-              webUrl { remote { name }, url }
+              webUrl { remote { name }, url },
+              isTrunk
             },
-            upstreamDistance { ahead, behind },
+            upstreamDistance {
+              ahead,
+              behind
+            },
+            parent {
+              refName,
+              displayName,
+              webUrl { remote { name }, url },
+              isTrunk
+            },
+            parentDistance {
+              ahead,
+              behind
+            },
             commit {
               id,
               author { name, emailAddress, timestamp },
@@ -150,7 +164,8 @@ export class RepositoryDetailsComponent extends AbstractComponent {
               refName,
               displayName,
               ... on GitTrackingBranch {
-                webUrl { remote { name }, url }
+                webUrl { remote { name }, url },
+                isTrunk
               }
             },
             webUrls { remote { name }, url }

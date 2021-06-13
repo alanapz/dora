@@ -23,7 +23,6 @@
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfUpstream')" descending>+ Upstream</th>
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesBehindUpstream')" descending>- Upstream</th>
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfAndBehindUpstream')" descending>+/- Upstream</th>
-          <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesWithNoParent')" descending>No Parent</th>
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfParent')" descending>+ Parent</th>
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesBehindParent')" descending>- Parent</th>
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('branchesAheadOfAndBehindParent')" descending>+/- Parent</th>
@@ -71,7 +70,6 @@
             <td><a href="#" (click)="onClick(repository, 'branchesAheadOfUpstream')">{{ repository.branchesAheadOfUpstream | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'branchesBehindUpstream')">{{ repository.branchesBehindUpstream | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'branchesAheadOfAndBehindUpstream')">{{ repository.branchesAheadOfAndBehindUpstream | numeric }}</a></td>
-            <td><a href="#" (click)="onClick(repository, 'branchesWithNoParent')">{{ repository.branchesWithNoParent | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'branchesAheadOfParent')">{{ repository.branchesAheadOfParent | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'branchesBehindParent')">{{ repository.branchesBehindParent | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'branchesAheadOfAndBehindParent')">{{ repository.branchesAheadOfAndBehindParent | numeric }}</a></td>
