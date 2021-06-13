@@ -84,3 +84,12 @@ th[sortable].desc:before, th[ng-reflect-sortable].desc:before {
 .badge.badge-warning {
   color: #444444;
 }
+
+.data-table td a, .data-table th a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.data-table td a:hover, .data-table th a:hover {
+  text-decoration: underline;
+}
