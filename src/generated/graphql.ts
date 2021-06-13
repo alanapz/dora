@@ -175,6 +175,9 @@ export interface GitTrackingBranch extends GitRef {
   __typename?: 'GitTrackingBranch';
   remote: GitRemote;
   branchName: string;
+  isTrunk: boolean;
+  parent?: GitTrackingBranch;
+  parentDistance?: GitRefDistance;
   webUrl?: GitWebUrl;
   refName: string;
   displayName: string;

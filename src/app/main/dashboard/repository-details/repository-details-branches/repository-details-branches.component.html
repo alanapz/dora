@@ -3,12 +3,15 @@
   <tr>
     <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
     <th scope="col" (sort)="onSort($event)" [sortable]="propName('name')">Name</th>
-    <th scope="col" (sort)="onSort($event)" [sortable]="propName('date')">Date</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('date')">Commit<br />Date</th>
     <th scope="col">Author</th>
     <th scope="col">Message</th>
     <th scope="col" (sort)="onSort($event)" [sortable]="propName('upstream')">Upstream</th>
     <th scope="col" (sort)="onSort($event)" [sortable]="propName('upstreamAhead')" descending>Ahead</th>
     <th scope="col" (sort)="onSort($event)" [sortable]="propName('upstreamBehind')" descending>Behind</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('parent')">Parent</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('parentAhead')" descending>Ahead</th>
+    <th scope="col" (sort)="onSort($event)" [sortable]="propName('parentBehind')" descending>Behind</th>
     <th scope="col">
       <div ngbDropdown container="body">
         <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle disabled="disabled">Actions</button>
@@ -20,22 +23,38 @@
   <ng-container *ngFor="let branch of branches">
     <tr>
       <td><input type="checkbox" (click)="qts.toggleObject(branch)" [checked]="(qts.isSelected(branch) ? 'checked' : '')" /></td>
-      <td><a href="#" refdetails [repoPath]="repoPath" [refName]="branch.refName" [displayName]="branch.displayName">{{ branch.displayName }}</a></td>
-      <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.committer.timestamp | timestamp:'full' }}">{{ branch.commit.committer.timestamp | timestamp:'compact' }}</td>
+      <td><a href="#" refdetails [repoPath]="repoPath" [refName]="branch.refName" [displayName]="branch.displayName">{{ branch.displayName | truncate:40 }}</a></td>
+      <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.committer.timestamp | timestamp:'full' }}"><a href="#" commitdetails [repoPath]="repoPath" [commitId]="branch.commit.id">{{ branch.commit.committer.timestamp | timestamp:'compact' }}</a> </td>
       <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.author.name }} &lt;{{ branch.commit.author.emailAddress }}&gt;">{{ branch.commit.author.name }}</td>
-      <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.message }}">{{ branch.commit.subject }}</td>
-      <td *ngIf="branch.upstream">
-        <a href="#" refdetails [repoPath]="repoPath" [refName]="branch.upstream.refName" [displayName]="branch.upstream.displayName">{{ branch.upstream.displayName }}</a>
-        <app-web-url-link [link]="branch.upstream.webUrl"></app-web-url-link>
-      </td>
-      <td *ngIf="!branch.upstream"><span class="badge badge-warning">No upstream</span></td>
-      <ng-container [ngSwitch]="branch.upstreamDistance && branch.upstreamDistance.ahead > 0">
-        <td *ngSwitchCase="true"><span class="badge badge-danger">{{ branch.upstreamDistance!.ahead }} Ahead</span></td>
-        <td *ngSwitchDefault>-</td>
+      <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.message }}">{{ branch.commit.subject | truncate:30 }}</td>
+      <ng-container>
+        <td *ngIf="branch.upstream"><app-ref-details-badge [repoPath]="repoPath" [ref]="branch.upstream"></app-ref-details-badge></td>
+        <td *ngIf="!branch.upstream">No upstream <app-bootstrap-icon iconName="bi-exclamation-triangle-fill"></app-bootstrap-icon></td>
       </ng-container>
-      <ng-container [ngSwitch]="branch.upstreamDistance && branch.upstreamDistance.behind > 0">
-        <td *ngSwitchCase="true"><span class="badge badge-info">{{ branch.upstreamDistance!.behind }} Behind</span></td>
-        <td *ngSwitchDefault>-</td>
+      <ng-container>
+        <td *ngIf="branch.upstreamDistance && branch.upstreamDistance.ahead">{{ branch.upstreamDistance.ahead }} <app-bootstrap-icon iconName="bi-exclamation-triangle-fill"></app-bootstrap-icon></td>
+        <td *ngIf="branch.upstreamDistance && !branch.upstreamDistance.ahead">0</td>
+        <td *ngIf="!branch.upstreamDistance">-</td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.upstreamDistance && branch.upstreamDistance.behind">{{ branch.upstreamDistance.behind }}</td>
+        <td *ngIf="branch.upstreamDistance && !branch.upstreamDistance.behind">0</td>
+        <td *ngIf="!branch.upstreamDistance">-</td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.parent && branch.upstream && branch.upstream.isTrunk">(Is trunk)</td>
+        <td *ngIf="branch.parent && !(branch.upstream && branch.upstream.isTrunk)"><app-ref-details-badge [repoPath]="repoPath" [ref]="branch.parent"></app-ref-details-badge></td>
+        <td *ngIf="!branch.parent"><span class="badge badge-warning">No parent</span></td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.parentDistance && branch.parentDistance.ahead">{{ branch.parentDistance.ahead }}</td>
+        <td *ngIf="branch.parentDistance && !branch.parentDistance.ahead">0</td>
+        <td *ngIf="!branch.parentDistance">-</td>
+      </ng-container>
+      <ng-container>
+        <td *ngIf="branch.parentDistance && branch.parentDistance.behind">{{ branch.parentDistance.behind }}</td>
+        <td *ngIf="branch.parentDistance && !branch.parentDistance.behind">0</td>
+        <td *ngIf="!branch.parentDistance">-</td>
       </ng-container>
       <td class="overflow-hidden">
         <div ngbDropdown container="body">
