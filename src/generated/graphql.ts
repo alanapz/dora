@@ -64,7 +64,8 @@ export interface IQuery {
 
 export interface GQLConfig {
   __typename?: 'GQLConfig';
-  repoRoot: string;
+  workspaceRoot: string;
+  hostWorkspaceRoot: string;
 }
 
 export interface GitBlob extends GitObject {
@@ -130,6 +131,7 @@ export interface GitRemote {
 export interface GitRepository {
   __typename?: 'GitRepository';
   path: string;
+  hostPath: string;
   commit?: GitCommit;
   recentCommits: GitCommit[];
   blob?: GitBlob;
@@ -246,3 +248,4 @@ export interface GitWorkingDirectoryItem {
   path: string;
   status: GitWorkingDirectoryItemStatus[];
 }
+  
