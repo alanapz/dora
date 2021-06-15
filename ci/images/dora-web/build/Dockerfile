@@ -1,5 +1,5 @@
 # Work image, entrypoint reclones repo if necessary
-FROM docker.io/alanmpinder/dora-web-base:20210613
+FROM docker.io/alanmpinder/dora-web-base:latest
 
 EXPOSE 4200
 
