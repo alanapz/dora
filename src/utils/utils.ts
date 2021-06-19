@@ -60,4 +60,28 @@ export const utils = {
   ofVoid(): Observable<void> {
     return of(void 0) as Observable<void>;
   },
+
+  removeIf<T>(values: T[], predicate: (val: T) => boolean): void {
+    let i = 0;
+    while (i < values.length) {
+      if (predicate(values[i])) {
+        values.splice(i, 1);
+      }
+      else {
+        ++i;
+      }
+    }
+  },
+
+  contains(filterBy: string, ... sources: (string | null)[]): boolean {
+    if (!filterBy || !filterBy.trim().length) {
+      return true;
+    }
+    for (const source of sources) {
+      if (source && source.toLowerCase().includes(filterBy.toLowerCase())) {
+        return true;
+      }
+    }
+    return false;
+  }
 };

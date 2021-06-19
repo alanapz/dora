@@ -1,4 +1,4 @@
-import { GitBranch, GitTrackingBranch } from "src/generated/graphql";
+import { GitBranch, GitTag, GitTrackingBranch } from "src/generated/graphql";
 
 export class AppUtils {
 
@@ -8,5 +8,9 @@ export class AppUtils {
 
   static isRefTrackingBranch(ref: any): ref is GitTrackingBranch {
     return (ref && ref.__typename === 'GitTrackingBranch');
+  }
+
+  static isRefTag(ref: any): ref is GitTag {
+    return (ref && ref.__typename === 'GitTag');
   }
 }

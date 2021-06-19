@@ -44,6 +44,9 @@ export class RefDetailsBadgeComponent extends AbstractComponent {
     if (AppUtils.isRefTrackingBranch(this.ref) && this.ref.isTrunk) {
       return 'success';
     }
+    if (AppUtils.isRefTag(this.ref)) {
+      return 'secondary';
+    }
     return null;
   }
 

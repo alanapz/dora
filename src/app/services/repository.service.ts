@@ -20,7 +20,7 @@ export class RepositoryService {
     const mutation: DocumentNode = gql`
       mutation fetchRepo($repoPath: String!) {
         result: repository(path: $repoPath) {
-          fetch { path }
+          fetch
         }
       }
     `;

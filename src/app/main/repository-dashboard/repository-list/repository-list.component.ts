@@ -1,7 +1,5 @@
 import { Component, Injector, Input, QueryList, ViewChildren } from '@angular/core';
 import { gql, OperationVariables } from "@apollo/client/core";
-import { Apollo } from "apollo-angular";
-import { DocumentNode } from "graphql";
 import { Observable, of, Subject } from "rxjs";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { AbstractComponent } from "src/app/abstract-component";
@@ -10,22 +8,21 @@ import {
   RepositoryModifiedEvent,
   RepositorySelectedEvent,
   RepositorySelectionType
-} from "src/app/main/dashboard/dashboard.types";
+} from "src/app/main/repository-dashboard";
+import { GraphQLService } from "src/app/services/graphql.service";
 import { RepositoryService } from "src/app/services/repository.service";
 import { ToastService } from "src/app/services/toast-service";
-import { unwrapApolloResult } from "src/app/utils/gql-result.operator";
 import { QuickTableSelect } from "src/app/utils/quick-table-select";
 import { environment } from "src/environments/environment";
 import { GitRepository } from "src/generated/graphql";
 import { nonNull } from "src/utils/check";
 import { multiFork } from "src/utils/multifork";
-import { utils } from "src/utils/utils";
+import { SortCallback, utils } from "src/utils/utils";
 
 interface RepositoryListItem {
   path: string;
   loaded: boolean;
   busy: boolean;
-  filtered: boolean;
   lastFetchDate: number | null;
   lastCommitDate: number | null;
   staged: number | null;
@@ -64,13 +61,22 @@ export class RepositoryListComponent extends AbstractComponent {
   @ViewChildren(NgbdSortableHeader)
   repositoryTableHeaders?: QueryList<NgbdSortableHeader>;
 
-  readonly qts = new QuickTableSelect(() => this.repositories);
+  filterBy: string = '';
 
   private _repositories: RepositoryListItem[] = [];
 
+  private _sortCallback: SortCallback<RepositoryListItem> = { func: repo => repo.path };
+
+  readonly qts = new QuickTableSelect(() => this.repositories)
+    .addAction({
+      label: "Fetch selected (###)",
+      icon: 'bi-download',
+      invoker: repo => this.fetchAndReloadRepository(repo)
+    });
+
   constructor(
     protected readonly injector: Injector,
-    private readonly apollo: Apollo,
+    private readonly graphql: GraphQLService,
     private readonly repositoryService: RepositoryService,
     private readonly toastService: ToastService) {
     super();
@@ -83,8 +89,6 @@ export class RepositoryListComponent extends AbstractComponent {
     nonNull(this.repositorySelected, "repositorySelected");
     nonNull(this.repositoryModified, "repositoryModified");
 
-    const waitComplete = this.incrementWaitCount();
-
     this.repositoryModified!
       .pipe(this.untilDestroyed())
       .pipe(mergeMap(event => {
@@ -93,21 +97,27 @@ export class RepositoryListComponent extends AbstractComponent {
       }))
       .subscribe(utils.subscriber());
 
-    const query: DocumentNode = gql`
+    this.loadRepositories();
+  }
+
+  private loadRepositories(): void {
+
+    const waitComplete = this.incrementWaitCount();
+
+    const query = gql`
       query {
         results: searchRepositories { path }
       }
     `;
 
-    this.apollo.query<{ results: GitRepository[] }>({query})
-      .pipe(unwrapApolloResult())
-      .subscribe(utils.subscriber(response => {
+    this.graphql.query<{ results: GitRepository[] }>({query})
+      .pipe(map(response => response.results))
+      .subscribe(utils.subscriber(results => {
 
-        this._repositories = response.results.map(repo => ({
+        this._repositories = results.map(repo => ({
           path: repo.path,
           loaded: false,
           busy: false,
-          filtered: false,
           lastFetchDate: null,
           lastCommitDate: null,
           staged: null,
@@ -141,7 +151,7 @@ export class RepositoryListComponent extends AbstractComponent {
 
   private loadRepository(repository: RepositoryListItem): Observable<void> {
 
-    const query: DocumentNode = gql`
+    const query = gql`
       query getRepoDetails($repoPath: String!) {
         result: repository(path: $repoPath) {
           path,
@@ -179,10 +189,9 @@ export class RepositoryListComponent extends AbstractComponent {
       repoPath: repository.path
     };
 
-    return this.apollo.query<{ result: GitRepository }>({query, variables}).pipe(
-      unwrapApolloResult(),
-      map(result => result.result),
-      mergeMap(result => {
+    return this.graphql.query<{ result: GitRepository }>({query, variables})
+      .pipe(map(result => result.result))
+      .pipe(mergeMap(result => {
 
         const workingDirectory = nonNull(result.workingDirectory);
 
@@ -216,11 +225,23 @@ export class RepositoryListComponent extends AbstractComponent {
   }
 
   get repositories(): RepositoryListItem[] {
-    return this._repositories;
+    return this._repositories
+      .filter(repo => utils.contains(this.filterBy, repo.path, repo.headDisplayName))
+      .sort(utils.orderBy(this._sortCallback));
   }
 
   propName(prop: keyof RepositoryListItem): string {
     return prop;
+  }
+
+  onRefreshClicked() {
+    this.loadRepositories();
+    return false;
+  }
+
+  onFetchAllClicked() {
+    multiFork(environment.concurrency, this._repositories.map(repo => this.fetchAndReloadRepository(repo))).subscribe(utils.subscriber());
+    return false;
   }
 
   onClick(repository: RepositoryListItem, selectionType: RepositorySelectionType) {
@@ -236,22 +257,18 @@ export class RepositoryListComponent extends AbstractComponent {
       }
     });
 
-    this._repositories.sort(utils.orderBy(({
+    this._sortCallback = {
       func: (status) => status[(columnName as keyof RepositoryListItem)],
       descending: (direction == 'desc')
-    })));
-  }
-
-  onBulkAction(action: 'fetch' | 'setDefaultUpstream') {
-
-    const selectedRepositories = this._repositories.filter(repo => this.qts.selected.has(repo) && !repo.filtered);
-
-    multiFork(environment.concurrency, selectedRepositories.map(repo => this.fetchAndReloadRepository(repo)))
-      .subscribe(utils.subscriber());
+    };
   }
 
   onAction(repo: RepositoryListItem, action: 'fetch') {
     this.fetchAndReloadRepository(repo).subscribe(utils.subscriber());
+  }
+
+  onBulkAction(action: 'fetch') {
+    multiFork(environment.concurrency, this.qts.selected.map(repo => this.fetchAndReloadRepository(repo))).subscribe(utils.subscriber());
   }
 
   private fetchAndReloadRepository(repo: RepositoryListItem): Observable<void> {

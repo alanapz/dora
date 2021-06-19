@@ -85,6 +85,10 @@ th[sortable].desc:before, th[ng-reflect-sortable].desc:before {
   color: #444444;
 }
 
+.data-table th, .data-table td {
+  font-size: 12.5px;
+}
+
 .data-table td a, .data-table th a {
   text-decoration: none;
   color: inherit;
@@ -92,4 +96,22 @@ th[sortable].desc:before, th[ng-reflect-sortable].desc:before {
 
 .data-table td a:hover, .data-table th a:hover {
   text-decoration: underline;
+}
+
+.badge {
+  font-size: 10.5px;
+}
+
+.centered {
+  text-align: center;
+}
+
+.max-width {
+  width: 100%;
+}
+
+.modal-dialog.modal-xl {
+  min-width: 1400px;
+  max-width: 1400px;
+  width: 1400px;
 }

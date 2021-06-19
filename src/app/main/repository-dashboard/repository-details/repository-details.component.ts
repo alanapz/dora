@@ -7,7 +7,7 @@ import { DocumentNode } from "graphql";
 import { from, Observable, of, Subject } from "rxjs";
 import { filter, map, mergeMap, tap } from "rxjs/operators";
 import { AbstractComponent } from "src/app/abstract-component";
-import { RepositoryModifiedEvent, RepositorySelectedEvent } from "src/app/main/dashboard/dashboard.types";
+import { RepositoryModifiedEvent, RepositorySelectedEvent } from "src/app/main/repository-dashboard";
 import { debug } from "src/app/utils/gql-debug.operator";
 import { unwrapApolloResult } from "src/app/utils/gql-result.operator";
 import { GitRepository } from "src/generated/graphql";
