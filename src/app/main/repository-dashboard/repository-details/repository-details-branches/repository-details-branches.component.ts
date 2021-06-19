@@ -2,6 +2,8 @@ import { Component, Injector, Input } from '@angular/core';
 import { AbstractComponent } from "src/app/abstract-component";
 import { GitRepository } from "src/generated/graphql";
 
+declare type TabName = 'summary' | 'commits';
+
 @Component({
   selector: 'app-repository-details-branches',
   templateUrl: './repository-details-branches.component.html',
@@ -9,7 +11,7 @@ import { GitRepository } from "src/generated/graphql";
 })
 export class RepositoryDetailsBranchesComponent extends AbstractComponent {
 
-  active = "summary";
+  active: TabName = "summary";
 
   @Input("repo")
   _repo?: GitRepository;
@@ -22,7 +24,7 @@ export class RepositoryDetailsBranchesComponent extends AbstractComponent {
     return this._repo!;
   }
 
-  tabClicked(name: string) {
+  tabClicked(name: TabName) {
     this.active = name;
     return false;
   }

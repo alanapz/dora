@@ -2,14 +2,28 @@
   <div class="spinner-border" role="status"></div>
 </div>
 
-<div style="width: 100%;" *ngIf="loadComplete">
+<div *ngIf="loadComplete" class="max-width">
 
-  <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
+  <hr />
 
-  <table class="table table-striped" style="width: 100%;">
+  <div class="form-group">
+    <form>
+      <div class="row">
+        <div class="col">
+          <input name="filterBy" type="text" class="form-control" placeholder="Search" [(ngModel)]="filterBy">
+        </div>
+        <div class="col" style="text-align: right;">
+          <button (click)="onFetchAllClicked()" class="btn btn-success btn-sm"><app-bootstrap-icon iconName="bi-download" iconSize="1.25em"></app-bootstrap-icon>Fetch All</button>
+          <button (click)="onRefreshClicked()" class="btn btn-primary btn-sm" style="margin-left: 1em;"><app-bootstrap-icon iconName="bi-arrow-repeat" iconSize="1.25em"></app-bootstrap-icon>Refresh</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <table class="table table-striped data-table max-width">
     <thead>
       <tr>
-        <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
+        <th *ngIf="fullScreenMode" scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''" /></th>
         <th scope="col" (sort)="onSort($event)" [sortable]="propName('path')">Path</th>
         <ng-container *ngIf="fullScreenMode">
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('lastFetchDate')">Last Fetched</th>
@@ -29,15 +43,7 @@
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('stashes')" descending>Stashes</th>
           <th scope="col" (sort)="onSort($event)" [sortable]="propName('warnings')" descending><app-bootstrap-icon iconName="bi-exclamation-circle-fill" iconSize="1.5em"></app-bootstrap-icon></th>
           <th scope="col">
-            <div ngbDropdown container="body">
-              <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle [disabled]="qts.isAnySelected() ? '' : 'disabled'">Actions</button>
-              <div ngbDropdownMenu>
-                <button ngbDropdownItem (click)="onBulkAction('fetch')">Fetch</button>
-                <button ngbDropdownItem (click)="onBulkAction('setDefaultUpstream')">Set Default Upstream</button>
-                <div class="dropdown-divider"></div>
-                <button ngbDropdownItem [disabled]="true">Reset To Pristine</button>
-              </div>
-            </div>
+            <app-quick-table-select-header [qts]="qts"></app-quick-table-select-header>
           </th>
         </ng-container>
       </tr>
@@ -45,7 +51,7 @@
     <tbody>
       <ng-container *ngFor="let repository of repositories">
         <tr>
-          <td><input type="checkbox" (click)="qts.toggleObject(repository)" [checked]="(qts.isSelected(repository) ? 'checked' : '')" /></td>
+          <td *ngIf="fullScreenMode"><input type="checkbox" (click)="qts.toggleObject(repository)" [checked]="(qts.isSelected(repository) ? 'checked' : '')" /></td>
           <td><a href="#" (click)="onClick(repository, 'path')">{{ repository.path }}</a></td>
           <td *ngIf="repository.busy && fullScreenMode" colspan="18">
             <div class="progress">
@@ -76,14 +82,7 @@
             <td><a href="#" (click)="onClick(repository, 'stashes')">{{ repository.stashes | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'warnings')">{{ repository.warnings | numeric }}</a></td>
             <td class="overflow-hidden">
-              <div ngbDropdown container="body">
-                <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>
-                <div ngbDropdownMenu>
-                  <button ngbDropdownItem (click)="onAction(repository, 'fetch')">Fetch</button>
-                  <div class="dropdown-divider"></div>
-                  <button ngbDropdownItem [disabled]="true">Reset To Pristine</button>
-                </div>
-              </div>
+              <app-quick-table-select-row [qts]="qts" [item]="repository"></app-quick-table-select-row>
             </td>
           </ng-container>
         </tr>

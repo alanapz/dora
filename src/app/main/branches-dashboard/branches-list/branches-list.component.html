@@ -1,0 +1,107 @@
+<div class="d-flex justify-content-center" *ngIf="!loadComplete">
+  <div class="spinner-border" role="status"></div>
+</div>
+
+<div *ngIf="loadComplete" class="max-width">
+
+  <hr />
+
+  <div class="form-group">
+    <form>
+      <div class="row">
+        <div class="col">
+          <input name="filterBy" type="text" class="form-control" placeholder="Search" [(ngModel)]="filterBy">
+        </div>
+        <div class="col" style="text-align: right;">
+          <button (click)="onFetchAllClicked()" class="btn btn-success btn-sm"><app-bootstrap-icon iconName="bi-download" iconSize="1.25em"></app-bootstrap-icon>Fetch All</button>
+          <button (click)="onRefreshClicked()" class="btn btn-primary btn-sm" style="margin-left: 1em;"><app-bootstrap-icon iconName="bi-arrow-repeat" iconSize="1.25em"></app-bootstrap-icon>Refresh</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <table *ngIf="!allRepositoriesLoaded" id="repo-table" class="table table-striped data-table max-width">
+    <thead>
+    <tr>
+      <th scope="col">Path</th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let repository of repositories">
+      <tr *ngIf="!repository.loaded">
+        <td>{{ repository.path }}</td>
+        <td>
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated max-width" [class.bg-danger]="repository.busy" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+    </tbody>
+  </table>
+
+  <table id="branches-table" class="table table-striped data-table max-width">
+    <thead>
+    <tr>
+      <th scope="col"><input type="checkbox" (click)="qts.toggleAll()" [checked]="qts.isAllSelected() ? 'checked' : ''"/></th>
+      <th scope="col" (sort)="onSort($event)" [sortable]="propName('path')">Repository</th>
+      <th scope="col" (sort)="onSort($event)" [sortable]="propName('name')">Name</th>
+      <th scope="col" (sort)="onSort($event)" [sortable]="propName('date')">Commit<br />Date</th>
+      <th scope="col" (sort)="onSort($event)" [sortable]="propName('author')">Author</th>
+      <th scope="col">Message</th>
+      <th scope="col" class="centered" (sort)="onSort($event)" [sortable]="propName('upstreamAhead')" descending>Ahead<br />Upstream</th>
+      <th scope="col" class="centered" (sort)="onSort($event)" [sortable]="propName('upstreamBehind')" descending>Behind<br />Upstream</th>
+      <th scope="col" (sort)="onSort($event)" [sortable]="propName('parent')">Parent</th>
+      <th scope="col" class="centered" (sort)="onSort($event)" [sortable]="propName('parentAhead')" descending>Ahead</th>
+      <th scope="col" class="centered" (sort)="onSort($event)" [sortable]="propName('parentBehind')" descending>Behind</th>
+      <th scope="col">
+        <app-quick-table-select-header [qts]="qts"></app-quick-table-select-header>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let branch of branches">
+      <tr>
+        <td><input type="checkbox" (click)="qts.toggleObject(branch)" [checked]="(qts.isSelected(branch) ? 'checked' : '')" /></td>
+        <td>
+          {{ branch.repository.path }}
+          <app-web-url-link *ngFor="let webUrl of branch.repository.webUrls" [link]="webUrl"></app-web-url-link>
+        </td>
+        <td>
+          <a href="#" refdetails [repoPath]="branch.repository.path" [refName]="branch.refName" [displayName]="branch.displayName">{{ branch.displayName | truncate:40 }}</a>
+          <app-web-url-link *ngIf="branch.upstream" [link]="branch.upstream.webUrl"></app-web-url-link>
+        </td>
+        <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.committer.timestamp | timestamp:'full' }}">
+          <a href="#" commitdetails [repoPath]="branch.repository.path" [commitId]="branch.commit.id">{{ branch.commit.committer.timestamp | timestamp:'compact' }}</a>
+        </td>
+        <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.author.name }} &lt;{{ branch.commit.author.emailAddress }}&gt;">
+          {{ branch.commit.author.name | truncate:20 }}
+        </td>
+        <td data-toggle="tooltip" data-html="true" title="{{ branch.commit.message }}">{{ branch.commit.subject | truncate:80 }}</td>
+
+        <ng-container>
+          <td *ngIf="branch.upstream" class="centered" [innerHTML]="branch.upstreamDistance && branch.upstreamDistance.ahead | branchDistance:true"></td>
+          <td *ngIf="branch.upstream" class="centered" [innerHTML]="branch.upstreamDistance && branch.upstreamDistance.behind | branchDistance"></td>
+          <td *ngIf="!branch.upstream" colspan="2" class="centered">No upstream</td>
+        </ng-container>
+
+        <ng-container>
+          <td *ngIf="branch.isTrunk">(Trunk branch)</td>
+          <td *ngIf="!branch.isTrunk && !branch.parent" class="centered"><span class="badge badge-danger max-width">No parent <app-bootstrap-icon iconName="bi-exclamation-triangle-fill"></app-bootstrap-icon></span></td>
+          <td *ngIf="!branch.isTrunk && branch.parent">
+            <a href="#" refdetails [repoPath]="branch.repository.path" [refName]="branch.parent.refName" [displayName]="branch.parent.displayName">{{ branch.parent.displayName | truncate:40 }}</a>
+            <app-web-url-link [link]="branch.parent.webUrl"></app-web-url-link>
+          </td>
+          <td [innerHTML]="!branch.isTrunk && branch.parent && branch.parentDistance && branch.parentDistance.ahead | branchDistance"></td>
+          <td [innerHTML]="!branch.isTrunk && branch.parent && branch.parentDistance && branch.parentDistance.behind | branchDistance"></td>
+        </ng-container>
+
+        <td class="overflow-hidden">
+          <app-quick-table-select-row [qts]="qts" [item]="branch"></app-quick-table-select-row>
+        </td>
+      </tr>
+    </ng-container>
+    </tbody>
+  </table>
+</div>

@@ -12,18 +12,18 @@
   <div *ngIf="loadComplete && ref">
     <p>Name: {{refName}}</p>
     <p>URL: XXX_TODO_FIXME</p>
-    <table id="commits-table" class="table table-striped">
+    <table id="commits-table" class="table table-striped data-table max-width">
       <thead>
       <tr>
         <th scope="col">ID</th>
         <th scope="col">Date</th>
         <th scope="col">Author</th>
         <th scope="col">Message</th>
-        <th scope="col"></th>
+        <th scope="col">Reachable By</th>
       </tr>
       </thead>
       <tbody>
-      <ng-container *ngFor="let commit of ref.ancestors">
+      <ng-container *ngFor="let commit of commits">
         <tr>
           <td data-toggle="tooltip" data-html="true" title="{{ commit.id }}">
             <a href="#" commitdetails [repoPath]="this.repoPath" [commitId]="commit.id">{{ commit.id.substring(0, 8) }}</a>
@@ -33,10 +33,8 @@
           <td data-toggle="tooltip" data-html="true" title="{{ commit.author.name }} &lt;{{ commit.author.emailAddress }}&gt;">{{ commit.author.name }}</td>
           <td data-toggle="tooltip" data-html="true" title="{{ commit.message }}">{{ commit.subject | truncate:120 }}</td>
           <td>
-            <ng-container *ngFor="let refNote of commit.refNotes">
-              <p *ngIf="!refNote.startsWith('origin/') && !refNote.startsWith('tag:')"><span class="badge badge-success">{{ refNote | truncate:40 }}</span></p>
-              <p *ngIf="refNote.startsWith('origin/')"><span class="badge badge-info">{{ refNote | truncate:40 }}</span></p>
-              <p *ngIf="refNote.startsWith('tag: ')"><span class="badge badge-secondary">{{ refNote.substring('tag: '.length) | truncate:40 }}</span></p>
+            <ng-container *ngFor="let reachableBy of commit.reachableBy">
+              <p *ngIf="isNewRef(reachableBy.refName)"><app-ref-details-badge [repoPath]="repoPath" [ref]="reachableBy"></app-ref-details-badge></p>
             </ng-container>
           </td>
         </tr>

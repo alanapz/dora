@@ -23,11 +23,6 @@ export interface GitBranchFilter {
   upstreamConfigured?: boolean;
 }
 
-export interface GitObject {
-  id: string;
-  repository: GitRepository;
-}
-
 export interface GitRef {
   refName: string;
   displayName: string;
@@ -35,6 +30,11 @@ export interface GitRef {
   commit?: GitCommit;
   ancestors: GitCommit[];
   distance?: GitRefDistance;
+}
+
+export interface GitObject {
+  id: string;
+  repository: GitRepository;
 }
 
 export interface GitTreeItem {
@@ -45,14 +45,19 @@ export interface GitTreeItem {
 
 export interface IMutation {
   __typename?: 'IMutation';
-  repository(path: string): GitRepositoryMutator | Promise<GitRepositoryMutator>;
+  repository(path: string): GQLRepositoryMutator | Promise<GQLRepositoryMutator>;
 }
 
-export interface GitRepositoryMutator {
-  __typename?: 'GitRepositoryMutator';
-  path: string;
-  fetch: GitRepository;
-  cleanWorkingDirectory: GitRepository;
+export interface GQLRepositoryMutator {
+  __typename?: 'GQLRepositoryMutator';
+  branch?: GQLBranchMutator;
+  fetch: MutationResult;
+  cleanWorkingDirectory: MutationResult;
+}
+
+export interface GQLBranchMutator {
+  __typename?: 'GQLBranchMutator';
+  delete: MutationResult;
 }
 
 export interface IQuery {
@@ -81,6 +86,9 @@ export interface GitBranch extends GitRef {
   branchName: string;
   upstream?: GitTrackingBranch;
   upstreamDistance?: GitRefDistance;
+  isTrunk: boolean;
+  parent?: GitTrackingBranch;
+  parentDistance?: GitRefDistance;
   refName: string;
   displayName: string;
   repository: GitRepository;
@@ -248,4 +256,5 @@ export interface GitWorkingDirectoryItem {
   path: string;
   status: GitWorkingDirectoryItemStatus[];
 }
-  
+
+export type MutationResult = any;

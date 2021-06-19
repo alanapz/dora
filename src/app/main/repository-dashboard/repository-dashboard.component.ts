@@ -1,13 +1,13 @@
 import { Component, Injector } from '@angular/core';
 import { BehaviorSubject, ReplaySubject } from "rxjs";
 import { AbstractComponent } from "src/app/abstract-component";
-import { RepositoryModifiedEvent, RepositorySelectedEvent } from "src/app/main/dashboard/dashboard.types";
+import { RepositoryModifiedEvent, RepositorySelectedEvent } from "src/app/main/repository-dashboard";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html'
+  selector: 'app-repository-dashboard',
+  templateUrl: './repository-dashboard.component.html'
 })
-export class DashboardComponent extends AbstractComponent {
+export class RepositoryDashboardComponent extends AbstractComponent {
 
   readonly repositorySelected = new BehaviorSubject<RepositorySelectedEvent|null>(null);
 
