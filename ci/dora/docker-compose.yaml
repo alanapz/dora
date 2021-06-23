@@ -9,7 +9,7 @@ services:
       - "3000:3000"
     environment:
       - GIT_URL=https://github.com/alanapz/gitql-api.git
-      - GIT_BRANCH=release
+      - GIT_BRANCH=main
       - HOST_WORKSPACE_ROOT
       - CORS_ORIGIN
     volumes:
@@ -24,7 +24,7 @@ services:
       - "4200:4200"
     environment:
       - GIT_URL=https://github.com/alanapz/dora.git
-      - GIT_BRANCH=release
+      - GIT_BRANCH=main
     volumes:
       - "dora-web-data:/dora-web:rw"
 

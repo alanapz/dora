@@ -52,7 +52,10 @@
       <ng-container *ngFor="let repository of repositories">
         <tr>
           <td *ngIf="fullScreenMode"><input type="checkbox" (click)="qts.toggleObject(repository)" [checked]="(qts.isSelected(repository) ? 'checked' : '')" /></td>
-          <td><a href="#" (click)="onClick(repository, 'path')">{{ repository.path }}</a></td>
+          <td>
+            <a href="#" (click)="onClick(repository, 'path')">{{ repository.path }}</a>
+            <app-web-url-link *ngFor="let webUrl of repository.webUrls" [link]="webUrl"></app-web-url-link>
+          </td>
           <td *ngIf="repository.busy && fullScreenMode" colspan="18">
             <div class="progress">
               <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
@@ -65,7 +68,10 @@
           </td>
           <ng-container *ngIf="repository.loaded && fullScreenMode">
             <td data-toggle="tooltip" data-html="true" title="{{ (repository.lastFetchDate || null) | timestamp:'full' }}"><a href="#" (click)="onClick(repository, 'lastFetchDate')">{{ (repository.lastFetchDate || null) | duration }}</a></td>
-            <td data-toggle="tooltip" data-html="true" title="{{ (repository.lastCommitDate || null) | timestamp:'full' }}"><a href="#" (click)="onClick(repository, 'lastCommitDate')">{{ (repository.lastCommitDate || null) | timestamp:'compact' }}</a></td>
+            <td data-toggle="tooltip" data-html="true" title="{{ (repository.lastCommitDate || null) | timestamp:'full' }}">
+              <a href="#" (click)="onClick(repository, 'lastCommitDate')">{{ (repository.lastCommitDate || null) | timestamp:'compact' }}</a>
+              <app-web-url-link *ngFor="let webUrl of repository.lastCommitWebUrls" [link]="webUrl"></app-web-url-link>
+            </td>
             <td><a href="#" (click)="onClick(repository, 'untracked')">{{ repository.untracked | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'unstaged')">{{ repository.unstaged | numeric }}</a></td>
             <td><a href="#" (click)="onClick(repository, 'staged')">{{ repository.staged | numeric }}</a></td>

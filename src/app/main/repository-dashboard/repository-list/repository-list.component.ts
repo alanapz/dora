@@ -14,7 +14,7 @@ import { RepositoryService } from "src/app/services/repository.service";
 import { ToastService } from "src/app/services/toast-service";
 import { QuickTableSelect } from "src/app/utils/quick-table-select";
 import { environment } from "src/environments/environment";
-import { GitRepository } from "src/generated/graphql";
+import { GitRepository, GitWebUrl } from "src/generated/graphql";
 import { nonNull } from "src/utils/check";
 import { multiFork } from "src/utils/multifork";
 import { SortCallback, utils } from "src/utils/utils";
@@ -25,6 +25,7 @@ interface RepositoryListItem {
   busy: boolean;
   lastFetchDate: number | null;
   lastCommitDate: number | null;
+  lastCommitWebUrls: GitWebUrl[] | null;
   staged: number | null;
   unstaged: number | null;
   untracked: number | null;
@@ -40,6 +41,7 @@ interface RepositoryListItem {
   branchesAheadOfAndBehindParent: number | null;
   stashes: number | null;
   warnings: number | null;
+  webUrls: GitWebUrl[] | null;
 }
 
 @Component({
@@ -120,6 +122,7 @@ export class RepositoryListComponent extends AbstractComponent {
           busy: false,
           lastFetchDate: null,
           lastCommitDate: null,
+          lastCommitWebUrls: null,
           staged: null,
           unstaged: null,
           untracked: null,
@@ -137,6 +140,7 @@ export class RepositoryListComponent extends AbstractComponent {
           stashes: null,
           unpushedTags: null,
           warnings: null,
+          webUrls: null
         }));
 
         multiFork(environment.concurrency, this._repositories
@@ -155,25 +159,26 @@ export class RepositoryListComponent extends AbstractComponent {
       query getRepoDetails($repoPath: String!) {
         result: repository(path: $repoPath) {
           path,
-          lastFetchDate,
+          lastFetchDate
           recentCommits(count: 1) {
-            id,
+            id
             committer { timestamp }
+            webUrls { remote { name }, url }
           },
           workingDirectory {
-            stagedLength,
-            unstagedLength,
+            stagedLength
+            unstagedLength
             untrackedLength
           },
           head {
-            refName,
+            refName
             displayName
           },
           branches {
-            branchName,
+            branchName
             upstream {
-              branchName,
-              parent { branchName },
+              branchName
+              parent { branchName }
               parentDistance { ahead, behind }
             },
             upstreamDistance { ahead, behind }
@@ -181,6 +186,7 @@ export class RepositoryListComponent extends AbstractComponent {
           stashes {
             refName
           }
+          webUrls { remote { name }, url }
         }
       }
     `;
@@ -202,6 +208,7 @@ export class RepositoryListComponent extends AbstractComponent {
         repository.busy = false;
         repository.lastFetchDate = (result.lastFetchDate || null);
         repository.lastCommitDate = (result.recentCommits && result.recentCommits.length ? result.recentCommits[0].committer.timestamp : null);
+        repository.lastCommitWebUrls = (result.recentCommits && result.recentCommits.length ? result.recentCommits[0].webUrls : null);
         repository.staged = (workingDirectory?.stagedLength || null);
         repository.unstaged = (workingDirectory?.unstagedLength || null);
         repository.untracked = (workingDirectory?.untrackedLength || null);
@@ -219,6 +226,7 @@ export class RepositoryListComponent extends AbstractComponent {
 
         repository.stashes = result.stashes.length;
         repository.warnings = 0;
+        repository.webUrls = result.webUrls;
 
         return of(void 0);
       }));
